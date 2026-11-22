@@ -36,6 +36,7 @@ export type Database = {
         Row: {
           after_url: string | null
           before_url: string | null
+          created_at: string
           description: string | null
           id: string
           inbox: Json
@@ -52,6 +53,7 @@ export type Database = {
         Insert: {
           after_url?: string | null
           before_url?: string | null
+          created_at?: string
           description?: string | null
           id?: string
           inbox?: Json
@@ -68,6 +70,7 @@ export type Database = {
         Update: {
           after_url?: string | null
           before_url?: string | null
+          created_at?: string
           description?: string | null
           id?: string
           inbox?: Json
@@ -167,6 +170,7 @@ export type Database = {
       faqs: {
         Row: {
           answer: string
+          created_at: string
           id: string
           published: boolean
           question: string
@@ -175,6 +179,7 @@ export type Database = {
         }
         Insert: {
           answer: string
+          created_at?: string
           id?: string
           published?: boolean
           question: string
@@ -183,6 +188,7 @@ export type Database = {
         }
         Update: {
           answer?: string
+          created_at?: string
           id?: string
           published?: boolean
           question?: string
@@ -324,6 +330,7 @@ export type Database = {
       }
       section_media: {
         Row: {
+          created_at: string
           desktop_url: string | null
           inbox: Json
           key: string
@@ -339,6 +346,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          created_at?: string
           desktop_url?: string | null
           inbox?: Json
           key: string
@@ -354,6 +362,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          created_at?: string
           desktop_url?: string | null
           inbox?: Json
           key?: string
@@ -372,6 +381,7 @@ export type Database = {
       }
       services: {
         Row: {
+          created_at: string
           description: string | null
           id: string
           inbox: Json
@@ -390,6 +400,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          created_at?: string
           description?: string | null
           id?: string
           inbox?: Json
@@ -408,6 +419,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          created_at?: string
           description?: string | null
           id?: string
           inbox?: Json
@@ -713,4 +725,3 @@ export const Constants = {
     },
   },
 } as const
-

@@ -27,7 +27,7 @@ export const fixtureManifest: Manifest = {
       },
     ],
     brands: [],
-    section_media: [{ key: "hero", label: "Hero", prompt: null, desktop_url: "s/hero-desktop.mp4", mobile_url: "s/hero-mobile.mp4", poster_url: "s/hero-desktop.jpg", overlay_opacity: 0.5, published: true, media_status: "published", media_synced_at: t, updated_at: t }],
+    section_media: [{ key: "hero", label: "Hero", prompt: null, desktop_url: "s/hero-desktop.mp4", mobile_url: "s/hero-mobile.mp4", poster_url: "s/hero-desktop.jpg", overlay_opacity: 0.5, published: true, media_status: "published", media_synced_at: t, created_at: t, updated_at: t }],
     testimonials: [],
     services: [],
     faqs: [],

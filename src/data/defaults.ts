@@ -60,7 +60,7 @@ export const defaultSettings: SiteSettings = {
 
 const sm = (key: string, label: string): SectionMedia => ({
   key, label, prompt: null, desktop_url: null, mobile_url: null, poster_url: null, overlay_opacity: 0.6,
-  published: true, media_status: "published", media_synced_at: null, updated_at: now,
+  published: true, media_status: "published", media_synced_at: null, created_at: now, updated_at: now,
 });
 
 export const SECTION_KEYS = [
@@ -71,7 +71,7 @@ export type SectionKey = (typeof SECTION_KEYS)[number];
 
 const svc = (slug: string, title: string, description: string, included: string[], sort_order: number) => ({
   id: `default-${slug}`, slug, title, description, included, turnaround: "TODO", price_from: "TODO",
-  loop_url: null, poster_url: null, sort_order, published: true, media_status: "published" as const, media_synced_at: null, updated_at: now,
+  loop_url: null, poster_url: null, sort_order, published: true, media_status: "published" as const, media_synced_at: null, created_at: now, updated_at: now,
 });
 
 export const defaultData: SiteData = {
@@ -96,6 +96,6 @@ export const defaultData: SiteData = {
     ["Can you work with footage I already have?", "Yes. Send it in any format and I'll mix it with generated shots where it helps."],
     ["How many revisions are included?", "TODO rounds of revisions are included in every project."],
     ["How do we start?", "Message me on WhatsApp or email with your idea and deadline. I'll reply with questions and a quote."],
-  ].map(([question, answer], i) => ({ id: `default-faq-${i}`, question, answer, sort_order: i + 1, published: true, updated_at: now })),
+  ].map(([question, answer], i) => ({ id: `default-faq-${i}`, question, answer, sort_order: i + 1, published: true, created_at: now, updated_at: now })),
   beforeAfter: [],
 };

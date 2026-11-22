@@ -5,7 +5,7 @@ import { mediaUrl } from "@/lib/media";
 import { useInView } from "@/hooks/useInView";
 import { SectionHeader } from "./SectionHeader";
 
-const placeholder: Pair = { id: "ph", title: "Placeholder pair", label: "Placeholder", description: "Upload a raw and a final clip in admin > Before / After.", before_url: null, after_url: null, poster_url: null, sort_order: 0, published: true, media_status: "published", media_synced_at: null, updated_at: "" };
+const placeholder: Pair = { id: "ph", title: "Placeholder pair", label: "Placeholder", description: "Upload a raw and a final clip in admin > Before / After.", before_url: null, after_url: null, poster_url: null, sort_order: 0, published: true, media_status: "published", media_synced_at: null, created_at: "", updated_at: "" };
 
 /** Synced dual-video wipe slider with tabs per pair. Drag, click or use arrow keys. */
 export function BeforeAfter() {
