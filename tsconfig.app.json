@@ -20,5 +20,5 @@
     "types": ["vite/client", "vitest/globals", "@testing-library/jest-dom"],
     "paths": { "@/*": ["./src/*"] }
   },
-  "include": ["src", "api", "shared"]
+  "include": ["src", "shared", "media-repo-template"]
 }

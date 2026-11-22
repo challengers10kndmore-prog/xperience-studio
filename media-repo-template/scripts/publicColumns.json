@@ -1,0 +1,10 @@
+{
+  "site_settings": "*",
+  "projects": "id,title,slug,discipline,category,subcategory,aspect_ratio,duration_s,description,brief,role,result,tools,brand_id,is_featured,is_premium,premium_order,is_xperience_original,sort_order,published,video_url,poster_url,teaser_url,full_video_url,media_status,media_synced_at,created_at,updated_at",
+  "brands": "id,slug,name,line,website,logo_url,sort_order,published,media_status,media_synced_at,created_at,updated_at",
+  "section_media": "key,label,prompt,desktop_url,mobile_url,poster_url,overlay_opacity,published,media_status,media_synced_at,updated_at",
+  "testimonials": "id,name,role,company,brand_id,quote,video_url,poster_url,sort_order,published,media_status,media_synced_at,created_at,updated_at",
+  "services": "id,slug,title,description,included,turnaround,price_from,loop_url,poster_url,sort_order,published,media_status,media_synced_at,updated_at",
+  "faqs": "id,question,answer,sort_order,published,updated_at",
+  "before_after": "id,title,label,description,before_url,after_url,poster_url,sort_order,published,media_status,media_synced_at,updated_at"
+}

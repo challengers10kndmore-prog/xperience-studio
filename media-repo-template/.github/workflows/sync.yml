@@ -1,0 +1,38 @@
+name: sync
+on:
+  repository_dispatch:
+    types: [media-uploaded]
+  workflow_dispatch:
+    inputs:
+      table: { description: "Table (optional)", required: false }
+      id: { description: "Row id (optional)", required: false }
+  schedule:
+    - cron: "17 * * * *" # hourly safety net
+permissions:
+  contents: write
+concurrency:
+  group: sync
+  cancel-in-progress: false
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Install ffmpeg
+        run: command -v ffmpeg || (sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg)
+      - name: Sync media
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TABLE: ${{ github.event.client_payload.table || inputs.table }}
+          ROW_ID: ${{ github.event.client_payload.id || inputs.id }}
+        run: |
+          ARGS=""
+          if [ -n "$TABLE" ]; then ARGS="--table $TABLE"; fi
+          if [ -n "$ROW_ID" ]; then ARGS="$ARGS --id $ROW_ID"; fi
+          if [ "$TABLE" = "manifest" ]; then ARGS="--manifest-only"; fi
+          node scripts/sync.mjs $ARGS

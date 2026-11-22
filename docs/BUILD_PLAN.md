@@ -13,14 +13,14 @@ Source of truth for the brief: BUILD_PROMPT.md. Tick items as they finish. Resum
 - [x] 1.5 Phase gate (typecheck, lint, test, build), commit, push, log
 
 ## Phase 2 - Media pipeline + failover
-- [ ] 2.1 Media repo layout + setup script (scripts/setup-media-repo.mjs) + media-repo workflow templates
-- [ ] 2.2 Action "sync" (ffmpeg transcode, posters, Pages commit, release for big masters, manifest)
-- [ ] 2.3 Action "keep-alive" (every 3 days)
-- [ ] 2.4 /api/publish (JWT + admins check, repository_dispatch); admin status + inbox meter
-- [ ] 2.5 DataProvider (source.json, Supabase 4 s timeout, manifest fallback, sessionStorage 5 min)
-- [ ] 2.6 Tests: Supabase blocked -> site renders from manifest, videos resolve
-- [ ] 2.7 MEDIA_HOST config abstraction
-- [ ] 2.8 Phase gate
+- [x] 2.1 Media repo layout + setup script (scripts/setup-media-repo.mjs) + media-repo workflow templates
+- [x] 2.2 Action "sync" (ffmpeg transcode, posters, Pages commit, release for big masters, manifest)
+- [x] 2.3 Action "keep-alive" (every 3 days)
+- [x] 2.4 /api/publish (JWT + admins check, repository_dispatch) — admin status badges + inbox meter land with the Phase 3 admin
+- [x] 2.5 DataProvider (source.json, Supabase 4 s timeout, manifest fallback, sessionStorage 5 min)
+- [x] 2.6 Tests: Supabase blocked -> site renders from manifest, videos resolve
+- [x] 2.7 MEDIA_HOST config abstraction
+- [x] 2.8 Phase gate
 
 ## Phase 3 - Admin + emergency admin
 - [ ] 3.1 Admin (projects + bulk upload/compression, ordering, sections, brands, testimonials, services, FAQs, before/after, stats/tools, settings/maintenance, messages, page views)
