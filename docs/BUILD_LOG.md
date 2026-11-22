@@ -66,3 +66,9 @@
 - Fixed a real bug: SplitText-split headings never updated when live data arrived (React wrote into detached text nodes). Split elements are now keyed by their text and revert before re-running.
 - Playwright e2e (desktop + mobile): Supabase blocked -> site renders from manifest.json, every <video> src on the media host, no release assets in <video>, skip link + player Escape. All pass. No horizontal overflow at 390 px; Two Crafts stacks on phones.
 - Meshy credit not needed yet (no model supplied).
+
+### Post-launch-prep: browser-only setup (Daniel has no laptop)
+- Media repo installed (Actions + Pages files), Pages on, Actions secrets added by Daniel; sync verified end to end from a real upload to a video playing from GitHub Pages (test row + files removed).
+- /admin/login: "Set or forgot password?" email link (Supabase recovery -> choose password on the site).
+- /admin/emergency/setup: one-time setup guarded by EMERGENCY_SETUP_CODE; QR + password in the browser; shows the three EMERGENCY_* values to paste into Vercel; refuses (locks) once they exist; setup-code attempts rate-limited.
+- bcryptjs, otpauth, qrcode moved to dependencies for the Vercel functions.

@@ -41,3 +41,29 @@ describe("lockout", () => {
     expect(lockState("ip:1", now + LOCK_MS + 1).locked).toBe(false);
   });
 });
+
+import { checkSetupCode, finishSetup, newTotp, setupState } from "./_lib/emergencySetup";
+
+describe("emergency setup page", () => {
+  afterEach(() => { for (const k of ["EMERGENCY_SETUP_CODE", "EMERGENCY_PASSWORD_HASH", "EMERGENCY_TOTP_SECRET", "EMERGENCY_SESSION_SECRET"]) delete process.env[k]; });
+  it("is open only with a setup code and locks once configured", () => {
+    expect(setupState()).toBe("no-code");
+    process.env.EMERGENCY_SETUP_CODE = "abc";
+    expect(setupState()).toBe("open");
+    process.env.EMERGENCY_PASSWORD_HASH = "h"; process.env.EMERGENCY_TOTP_SECRET = "s"; process.env.EMERGENCY_SESSION_SECRET = "x";
+    expect(setupState()).toBe("locked");
+  });
+  it("checks the setup code", () => {
+    expect(checkSetupCode("right-code", "right-code")).toBe(true);
+    expect(checkSetupCode("wrong", "right-code")).toBe(false);
+  });
+  it("produces values the login accepts", async () => {
+    const { secret } = newTotp();
+    const code = new OTPAuth.TOTP({ secret: OTPAuth.Secret.fromBase32(secret) }).generate();
+    const v = await finishSetup({ password: "a-long-emergency-pass", secret, code });
+    expect(await checkPassword("a-long-emergency-pass", v.EMERGENCY_PASSWORD_HASH)).toBe(true);
+    expect(checkTotp(new OTPAuth.TOTP({ secret: OTPAuth.Secret.fromBase32(v.EMERGENCY_TOTP_SECRET) }).generate(), v.EMERGENCY_TOTP_SECRET)).toBe(true);
+    expect(verifySession(signSession(v.EMERGENCY_SESSION_SECRET), v.EMERGENCY_SESSION_SECRET)).toBe(true);
+    await expect(finishSetup({ password: "short", secret, code })).rejects.toThrow();
+  });
+});

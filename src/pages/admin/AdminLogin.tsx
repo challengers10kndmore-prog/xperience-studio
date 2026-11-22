@@ -44,7 +44,7 @@ export default function AdminLogin() {
       } else if (mode === "forgot") {
         const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/admin/login` });
         if (error) throw error;
-        setMsg({ tone: "ok", text: "Check your email for a link to set a new password." });
+        setMsg({ tone: "ok", text: "If that's the admin email, a link is on its way. Open it on this device to choose your password (check spam too)." });
       } else {
         if (password.length < 10) throw new Error("Use at least 10 characters.");
         if (password !== password2) throw new Error("The two passwords don't match.");
@@ -65,7 +65,7 @@ export default function AdminLogin() {
       <form onSubmit={onSubmit} className="w-full max-w-sm space-y-5 rounded-2xl border border-line bg-carbon p-8">
         <XperienceLogo variant="mark" className="mx-auto h-16 w-16" />
         <h1 className="text-center font-body text-xl font-semibold tracking-normal">
-          {mode === "login" ? "Admin sign in" : mode === "forgot" ? "Reset password" : "Set your password"}
+          {mode === "login" ? "Admin sign in" : mode === "forgot" ? "Set or reset your password" : "Choose your password"}
         </h1>
         {mode !== "set-password" && (
           <div className="space-y-1.5">
@@ -91,7 +91,7 @@ export default function AdminLogin() {
         </Button>
         <div className="flex justify-between text-xs text-ash">
           {mode === "login" ? (
-            <button type="button" className="hover:text-chrome" onClick={() => setMode("forgot")}>Forgot password?</button>
+            <button type="button" className="hover:text-chrome" onClick={() => setMode("forgot")}>Set or forgot password?</button>
           ) : (
             <button type="button" className="hover:text-chrome" onClick={() => setMode("login")}>Back to sign in</button>
           )}

@@ -7,11 +7,13 @@ import {
   checkPassword, checkTotp, GLOBAL_MAX_FAILURES, clearCookie, hasEmergencySession, lockState, recordFailure, recordSuccess, sessionCookie, signSession,
 } from "../_lib/emergency.js";
 import { pingSupabase } from "../_lib/supabase.js";
+import { checkSetupCode, finishSetup, newTotp, setupState } from "../_lib/emergencySetup.js";
 import { dispatchSync, setMaintenance, setSource, syncStatus, SOURCE_MODES, type SourceFile } from "../_lib/github.js";
 
 export async function GET(req: Request) {
   const action = actionOf(req);
-  if (action === "session") return json({ authenticated: hasEmergencySession(req), configured: configured() });
+  if (action === "session") return json({ authenticated: hasEmergencySession(req), configured: configured(), setup: setupState() });
+  if (action === "setup-status") return json({ setup: setupState() });
   if (!hasEmergencySession(req)) return err(401, "Sign in first.");
   if (action === "health") {
     const [supabase, status] = await Promise.all([pingSupabase(), syncStatus().catch((e: Error) => ({ error: e.message }))]);
@@ -40,6 +42,24 @@ export async function POST(req: Request) {
     }
     recordSuccess(`ip:${ip}`);
     return json({ ok: true }, 200, { "Set-Cookie": sessionCookie(signSession(envOr("EMERGENCY_SESSION_SECRET")!)) });
+  }
+  if (action === "setup-begin" || action === "setup-finish") {
+    const state = setupState();
+    if (state === "locked") return err(410, "Emergency login is already set up. This page is locked.");
+    if (state === "no-code") return err(503, "Add EMERGENCY_SETUP_CODE in Vercel first, then redeploy.");
+    const ip = clientIp(req);
+    const lock = lockState(`setup:${ip}`);
+    if (lock.locked) return err(429, `Too many attempts. Try again in ${Math.ceil(lock.retryAfterS / 60)} min.`, { "Retry-After": String(lock.retryAfterS) });
+    const body = await readJson<{ setupCode: string; password: string; secret: string; code: string }>(req);
+    if (!checkSetupCode(String(body.setupCode ?? ""))) { recordFailure(`setup:${ip}`); return err(401, "Wrong setup code."); }
+    if (action === "setup-begin") return json(newTotp());
+    try {
+      const values = await finishSetup({ password: String(body.password ?? ""), secret: String(body.secret ?? ""), code: String(body.code ?? "") });
+      recordSuccess(`setup:${ip}`);
+      return json({ ok: true, values });
+    } catch (e) {
+      return err(400, e instanceof Error ? e.message : "Setup failed");
+    }
   }
   if (action === "logout") return json({ ok: true }, 200, { "Set-Cookie": clearCookie() });
 

@@ -51,7 +51,7 @@ export default function EmergencyAdmin() {
 function Login({ onDone, configured }: { onDone: () => void; configured: boolean }) {
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
-  const [msg, setMsg] = useState<string | null>(configured ? null : "Not set up yet: run node scripts/make-emergency-credentials.mjs and add the EMERGENCY_ variables in Vercel.");
+  const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   async function submit(e: FormEvent) {
     e.preventDefault(); setBusy(true); setMsg(null);
@@ -61,6 +61,7 @@ function Login({ onDone, configured }: { onDone: () => void; configured: boolean
   }
   return (
     <form onSubmit={submit} className="max-w-sm space-y-4 rounded-2xl border border-line bg-carbon p-6">
+      {!configured && <p className="rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-sm text-amber-100">Not set up yet. <Link className="underline" to="/admin/emergency/setup">Set up your emergency login</Link>.</p>}
       <div className="space-y-1.5"><Label htmlFor="ep">Emergency password</Label><Input id="ep" type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} /></div>
       <div className="space-y-1.5"><Label htmlFor="ec">6-digit code from your authenticator app</Label>
         <Input id="ec" inputMode="numeric" pattern="\d{6}" maxLength={6} autoComplete="one-time-code" required value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))} /></div>

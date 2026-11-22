@@ -10,6 +10,7 @@ const NotFound = lazy(() => import("@/pages/NotFound"));
 const AdminApp = lazy(() => import("@/pages/admin/AdminApp"));
 const AdminLogin = lazy(() => import("@/pages/admin/AdminLogin"));
 const EmergencyAdmin = lazy(() => import("@/pages/admin/EmergencyAdmin"));
+const EmergencySetup = lazy(() => import("@/pages/admin/EmergencySetup"));
 const BrandPreview = import.meta.env.DEV ? lazy(() => import("@/pages/BrandPreview")) : null;
 
 const queryClient = new QueryClient({ defaultOptions: { queries: { refetchOnWindowFocus: false } } });
@@ -22,6 +23,7 @@ export function App() {
           <Routes>
             {BrandPreview && <Route path="/__brand" element={<BrandPreview />} />}
             <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin/emergency/setup" element={<EmergencySetup />} />
             <Route path="/admin/emergency" element={<EmergencyAdmin />} />
             <Route path="/admin/*" element={<AdminApp />} />
             <Route element={<DataProvider><SiteLayout /></DataProvider>}>
