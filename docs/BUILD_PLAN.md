@@ -23,11 +23,11 @@ Source of truth for the brief: BUILD_PROMPT.md. Tick items as they finish. Resum
 - [x] 2.8 Phase gate
 
 ## Phase 3 - Admin + emergency admin
-- [ ] 3.1 Admin (projects + bulk upload/compression, ordering, sections, brands, testimonials, services, FAQs, before/after, stats/tools, settings/maintenance, messages, page views)
-- [ ] 3.2 /api/emergency/* (login bcrypt+TOTP, cookie, lockout, health, source, maintenance, resync) + make-emergency-credentials script
-- [ ] 3.3 /admin/emergency page with zero Supabase dependency; main admin source toggle + last synced
-- [ ] 3.4 Optional emergency upload (script fallback)
-- [ ] 3.5 Phase gate
+- [x] 3.1 Admin (projects + bulk upload/compression, ordering, sections, brands, testimonials, services, FAQs, before/after, stats/tools, settings/maintenance, messages, page views)
+- [x] 3.2 /api/emergency/* (login bcrypt+TOTP, cookie, lockout, health, source, maintenance, resync) + make-emergency-credentials script
+- [x] 3.3 /admin/emergency page with zero Supabase dependency; main admin source toggle + last synced
+- [x] 3.4 Optional emergency upload (script fallback)
+- [x] 3.5 Phase gate
 
 ## Phase 4 - Sections, logo moments, section videos, brands
 - [ ] 4.1 Global: Lenis+ScrollTrigger, cursor, grain, reduced motion

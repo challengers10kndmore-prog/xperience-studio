@@ -7,6 +7,7 @@
 - Branch: work is committed on claude/ecstatic-hawking-h8iwb7 and pushed to both that branch and `build` (as the brief asks).
 
 ## Decisions
+- Emergency upload ships as scripts/emergency-upload.mjs (local ffmpeg + Git Data API). The in-browser path needs a GitHub App installation token and a 90 MB base64 request through api.github.com, which can't be verified from here; EMERGENCY_UPLOAD_ENABLED stays false.
 - Public site reads Supabase with plain fetch to PostgREST (keeps supabase-js, 56 kB gz, out of the public bundle); admin uses supabase-js.
 - Media columns store paths relative to the media host ("v/<id>.mp4"); src/lib/media.ts resolves them (MEDIA_HOST switch).
 - Emergency maintenance is written to source.json as well as manifest.json so it applies in every data mode.
@@ -33,3 +34,10 @@
 - /api/publish, /api/admin/[status|source], /api/emergency/[action] (3 Vercel functions total, under the Hobby limit of 12).
 - DataProvider: source.json (60 s cache) -> Supabase (4 s timeout) -> manifest.json (fallback remembered 5 min) -> bundled defaults; MEDIA_HOST abstraction in src/lib/media.ts.
 - Gate: 27 unit tests (failover, timeout, release-asset guard, ffmpeg args, JWT/admin check, lockout, cookie) + build pass. scripts/setup-media-repo.mjs waits on the media repo (NEEDS #3).
+
+### Phase 3 - Admin + emergency admin (done)
+- Admin (shadcn-style, lazy chunk): overview (counts, sync status, data-source toggle, publish-now, inbox meter of 1 GB), projects (all fields, discipline filter, bulk upload with in-browser ffmpeg.wasm compression + XHR progress, drag-order Premium and Featured), section videos, brands, testimonials, services, FAQs, before/after, stats + tools, site settings + maintenance + all section copy, messages, page views.
+- Status per media item: Pending / Publishing / Live / Failed (with error tooltip + Retry); lists auto-refresh while anything is pending; text edits auto-regenerate manifest.json (debounced).
+- /admin/emergency talks only to /api/emergency/* (bcrypt + TOTP, signed httpOnly cookie 2 h, lockout); health, data source, maintenance, resync. scripts/make-emergency-credentials.mjs (QR) and scripts/emergency-upload.mjs.
+- Verified the admin UI in Chromium with mocked network (creating a temporary admin account in the live project was blocked by the session's safety rules, so nothing touched the real database).
+- Gate: typecheck, lint, 28 tests, build pass.

@@ -21,3 +21,9 @@ The site works without these (placeholders are in place); fill them in when you 
   3. Fine-grained token (if you haven't already): GitHub > Settings > Developer settings > Fine-grained tokens > Only `xperience-media` > Contents: Read and write, Actions: Read and write, Pages: Read and write. Save it as `GITHUB_TOKEN` (cloud environment variable, and later in Vercel).
   4. Tell me "media repo ready". I'll push the Actions, then you'll switch on Pages (Settings > Pages > Deploy from branch > main > / (root)).
 - **Until then:** the site uses bundled placeholder content and animated brand-colour backgrounds.
+
+## 4. Emergency admin login (Phase 3, before going live)
+- **What:** a second way into the admin that works even if Supabase is down (password + 6-digit code from an authenticator app).
+- **Steps:** on your laptop, in `xperience-studio`: `node scripts/make-emergency-credentials.mjs`. Scan the QR code with Google Authenticator (or Authy / 1Password), type the code it shows, answer `y` to save.
+- **Where:** then copy `EMERGENCY_PASSWORD_HASH`, `EMERGENCY_TOTP_SECRET` and `EMERGENCY_SESSION_SECRET` from `.env.local` into Vercel > Settings > Environment Variables.
+- **Use it at:** `/admin/emergency`.
