@@ -1,0 +1,12 @@
+# dependencies
+node_modules/
+# builds
+dist/
+.vercel/
+# env files: never commit real keys
+.env
+.env.local
+.env.*.local
+# os / editor
+.DS_Store
+*.log
