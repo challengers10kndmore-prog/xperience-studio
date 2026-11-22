@@ -51,3 +51,10 @@
 - Sections 2-10 + FAQ + CTA/contact form + category pages; SectionMedia loops (lazy, paused off-screen, overlay, placeholder). Full player opens from any card with a FLIP.
 - Premium transitions: WebGL shader in the shared canvas (liquid for AI, slice-cut for Editing) with a CSS clip-path fallback of the same character.
 - Gate: typecheck, lint, 30 tests, build pass.
+
+### Phase 5 - Hero "The Assembly" (done)
+- Loads /models/daniel.glb (meshopt + KTX2) when present, normalises it (centre, scale, drop floaters); otherwise a procedural stand-in humanoid (no third-party model licence needed).
+- MeshSurfaceSampler -> 60k points (40k mobile), aHome/aScatter/aDelay, brand-gradient additive shader; cursor energy (movement x proximity) assembles feet-first, decays when idle, holds 7 s once complete; touch uses scroll + device tilt.
+- At ~1: rim-lit solid with a scan-line sweep (rig idle + head-follow when the GLB has bones/clips); 5-7 featured shards orbit with hover title and click-to-play; scroll-out disperses particles upward and flies shards forward.
+- One shared renderer (drei View) for hero, premium transitions and footer logo; GPU tier < 2 / no WebGL2 / reduced motion -> hero loop + copy. Fixed a crash where React inserted next to a GSAP pin-spacer (pinned sections now sit in React-owned wrappers).
+- Gate: typecheck, lint, 30 tests, build pass. Screenshot docs/brand/hero-assembly.png. scripts/prepare-model.mjs for Daniel's model.

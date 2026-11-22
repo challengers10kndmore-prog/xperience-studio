@@ -23,7 +23,7 @@ export function HeroCopy() {
   return (
     <div ref={ref} className="content max-w-5xl space-y-7">
       <p className="eyebrow" data-fade>AI Video · Video Editing</p>
-      <h1 className="text-balance text-[clamp(3rem,8.6vw,8.5rem)] font-semibold">{settings.hero_headline}</h1>
+      <h1 className="text-balance text-[clamp(3rem,8.6vw,8.5rem)] font-semibold md:max-w-[62vw] md:text-[clamp(3rem,6.6vw,8rem)]">{settings.hero_headline}</h1>
       <p className="max-w-xl text-lg text-chrome/75" data-fade>{settings.hero_sub}</p>
       <div className="flex flex-wrap gap-3" data-fade>
         <Magnetic><button type="button" onClick={() => scrollToTarget("#work")} className="btn btn-primary" data-cursor="play">{settings.hero_cta_primary}</button></Magnetic>

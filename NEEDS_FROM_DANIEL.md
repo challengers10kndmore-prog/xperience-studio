@@ -61,3 +61,13 @@ The site works without these (placeholders are in place); fill them in when you 
 - **Tools list:** confirm the toolkit chips (admin > Stats and tools).
 - **Contact:** your email and WhatsApp number (admin > Site settings) so the buttons appear.
 - **Testimonials:** quotes or short videos from clients (admin > Testimonials). The block stays hidden until there's one.
+
+## 7. Your 3D model for the hero (Phase 5, any time)
+- **What:** a 3D model of you. Until then a simple stand-in figure assembles from particles (see docs/brand/hero-assembly.png).
+- **Photos first:** 4 photos in flat, even light (no harsh shadows): front, back, left, right. Plus one full-body front shot standing in an A-pose (arms slightly away from your sides), plain background.
+- **Make the model (free), pick one:**
+  1. Hunyuan3D-2 on Hugging Face (search "Hunyuan3D-2 space") > upload the A-pose front photo > Generate > download GLB.
+  2. TRELLIS on Hugging Face (search "TRELLIS space") > same steps.
+  3. Meshy (meshy.ai, free tier) > Image to 3D > download GLB. If you use Meshy's free tier, tell me: the footer must then say "3D model generated with Meshy".
+- **Optional rig (breathing + head turns toward the cursor):** mixamo.com (free Adobe account) > Upload character > place markers > pick an "Breathing Idle" animation > Download FBX with skin > convert to GLB (e.g. in Blender: File > Import FBX, File > Export glTF Binary).
+- **Where:** send me the file, or run `node scripts/prepare-model.mjs your-file.glb` (it cleans and compresses it to `public/models/daniel.glb`, under 4 MB). The site picks it up automatically.

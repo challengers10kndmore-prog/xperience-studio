@@ -38,15 +38,15 @@ Source of truth for the brief: BUILD_PROMPT.md. Tick items as they finish. Resum
 - [x] 4.6 Phase gate
 
 ## Phase 5 - Hero "The Assembly"
-- [ ] 5.1 Model loading + stand-in humanoid
-- [ ] 5.2 Particle sampler + shader
-- [ ] 5.3 Interaction (cursor/scroll/tilt)
-- [ ] 5.4 Mesh crossfade + scan line
-- [ ] 5.5 Video shards
-- [ ] 5.6 Scroll-out
-- [ ] 5.7 Hero copy + loop
-- [ ] 5.8 Shared renderer, GPU tier fallback, perf
-- [ ] 5.9 Phase gate
+- [x] 5.1 Model loading + stand-in humanoid
+- [x] 5.2 Particle sampler + shader
+- [x] 5.3 Interaction (cursor/scroll/tilt)
+- [x] 5.4 Mesh crossfade + scan line
+- [x] 5.5 Video shards
+- [x] 5.6 Scroll-out
+- [x] 5.7 Hero copy + loop
+- [x] 5.8 Shared renderer, GPU tier fallback, perf
+- [x] 5.9 Phase gate
 
 ## Phase 6 - Polish & launch prep
 - [ ] 6.1 Lighthouse, fonts, lazy video, a11y, SEO/OG, vercel.json

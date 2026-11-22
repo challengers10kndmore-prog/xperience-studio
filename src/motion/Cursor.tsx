@@ -25,7 +25,7 @@ export function Cursor() {
     const move = (e: PointerEvent) => {
       xd(e.clientX); yd(e.clientY); xr(e.clientX); yr(e.clientY);
       const el = (e.target as HTMLElement | null)?.closest<HTMLElement>("[data-cursor]");
-      setLabel(el?.dataset.cursor ?? null);
+      setLabel(el?.dataset.cursor ?? document.body.dataset.cursorHint ?? null);
     };
     const leave = () => gsap.to([dot.current, ring.current], { opacity: 0, duration: 0.2 });
     const enter = () => gsap.to([dot.current, ring.current], { opacity: 1, duration: 0.2 });

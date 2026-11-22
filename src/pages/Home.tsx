@@ -1,4 +1,4 @@
-import { HeroStatic } from "@/components/sections/HeroStatic";
+import { Hero } from "@/components/sections/Hero";
 import { Manifesto } from "@/components/sections/Manifesto";
 import { PremiumSamples } from "@/components/sections/PremiumSamples";
 import { TwoCrafts } from "@/components/sections/TwoCrafts";
@@ -14,7 +14,7 @@ import { LightLine } from "@/motion/LightLine";
 export default function Home() {
   return (
     <>
-      <HeroStatic />
+      <Hero />
       <Manifesto />
       <PremiumSamples />
       <LightLine />
