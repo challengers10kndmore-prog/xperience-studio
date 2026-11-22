@@ -1,0 +1,2 @@
+# Minimal Supabase CLI config. Project ref comes from SUPABASE_PROJECT_REF.
+project_id = "xperience-studio"
