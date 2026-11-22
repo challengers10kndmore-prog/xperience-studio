@@ -42,7 +42,8 @@
   .eyebrow { font-family: var(--font-label); font-size: 0.68rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--color-ash); }
   .timecode { font-family: var(--font-mono); font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
   .text-gradient { background: var(--brand-gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .section { position: relative; isolation: isolate; padding-inline: clamp(1.25rem, 4vw, 4rem); }
+  .section { position: relative; padding-inline: clamp(1.25rem, 4vw, 4rem); }
+  .section > .content { position: relative; z-index: 10; }
   .section-title { font-size: clamp(2.5rem, 7vw, 6.5rem); font-weight: 600; }
   .btn { display: inline-flex; align-items: center; gap: 0.6rem; border-radius: 999px; padding: 0.95rem 1.6rem; font-family: var(--font-label); font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; transition: transform 0.4s var(--ease-expo), box-shadow 0.4s var(--ease-expo), background-color 0.3s; will-change: transform; }
   .btn-primary { background: var(--brand-gradient); color: #fff; box-shadow: 0 0 0 1px rgba(255,255,255,0.08) inset, 0 10px 40px -10px rgba(124,58,237,0.7); }
@@ -78,3 +79,26 @@ html.lenis, html.lenis body { height: auto; }
   .grain, .media-placeholder { animation: none; }
   *, *::before, *::after { scroll-behavior: auto !important; }
 }
+
+/* Custom cursor replaces the native one on fine pointers (inputs keep their caret). */
+@media (hover: hover) and (pointer: fine) {
+  html.has-cursor, html.has-cursor a, html.has-cursor button, html.has-cursor [data-cursor] { cursor: none; }
+}
+
+/* Process timeline clips: hatched "unrendered" -> solid "rendered" once the playhead crosses */
+.process-clip { background: rgba(16, 14, 26, 0.85); transition: border-color .5s, box-shadow .5s, background-color .5s; }
+.process-hatch { background: repeating-linear-gradient(135deg, rgba(255,255,255,.05) 0 2px, transparent 2px 12px); transition: opacity .6s; }
+.process-clip .process-status::after { content: "UNRENDERED"; color: var(--color-ash); }
+.process-clip.is-active { border-color: var(--clip); box-shadow: 0 0 0 1px var(--clip), 0 0 40px -10px var(--clip); }
+.process-clip.is-rendered { background: linear-gradient(160deg, color-mix(in oklab, var(--clip) 24%, #100e1a), #100e1a 70%); border-color: color-mix(in oklab, var(--clip) 50%, #2b2640); }
+.process-clip.is-rendered .process-hatch { opacity: 0; }
+.process-clip.is-rendered .process-status::after { content: "RENDERED ✓"; color: var(--color-chrome); }
+
+/* Trusted-by cards: violet rim light that follows the pointer */
+.brand-card { transform-style: preserve-3d; will-change: transform; transition: border-color .4s; }
+.brand-card::before { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; opacity: 0; transition: opacity .4s;
+  background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), rgba(124,58,237,.9), transparent 60%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+.brand-card::after { content: ""; position: absolute; inset: 0; border-radius: inherit; opacity: 0; transition: opacity .4s;
+  background: radial-gradient(300px circle at var(--mx, 50%) var(--my, 50%), rgba(124,58,237,.14), transparent 60%); }
+.brand-card:hover::before, .brand-card:hover::after, .brand-card:focus-visible::before { opacity: 1; }

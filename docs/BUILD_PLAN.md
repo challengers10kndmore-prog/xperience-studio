@@ -30,12 +30,12 @@ Source of truth for the brief: BUILD_PROMPT.md. Tick items as they finish. Resum
 - [x] 3.5 Phase gate
 
 ## Phase 4 - Sections, logo moments, section videos, brands
-- [ ] 4.1 Global: Lenis+ScrollTrigger, cursor, grain, reduced motion
-- [ ] 4.2 Logo moments a-f (preloader, nav mark, X-wipe, light-lines, footer 3D, credit line)
-- [ ] 4.3 SectionMedia background component with placeholder
-- [ ] 4.4 Sections 2-10 + Finale
-- [ ] 4.5 Category pages
-- [ ] 4.6 Phase gate
+- [x] 4.1 Global: Lenis+ScrollTrigger, cursor, grain, reduced motion
+- [x] 4.2 Logo moments a-f (preloader, nav mark, X-wipe, light-lines, footer 3D, credit line)
+- [x] 4.3 SectionMedia background component with placeholder
+- [x] 4.4 Sections 2-10 + Finale
+- [x] 4.5 Category pages
+- [x] 4.6 Phase gate
 
 ## Phase 5 - Hero "The Assembly"
 - [ ] 5.1 Model loading + stand-in humanoid

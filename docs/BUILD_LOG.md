@@ -7,6 +7,9 @@
 - Branch: work is committed on claude/ecstatic-hawking-h8iwb7 and pushed to both that branch and `build` (as the brief asks).
 
 ## Decisions
+- Bloom is real (EffectComposer) only in the brand preview; in the shared multi-View canvas a post-processing pass can't be scoped to one View, so the footer logo uses emissive + an additive glow sprite.
+- Placeholder films (tagged "Placeholder") appear only while no real project has media, so every section can be reviewed now.
+- FAQ/service TODOs render as an amber "TBC" mark instead of invented numbers.
 - Emergency upload ships as scripts/emergency-upload.mjs (local ffmpeg + Git Data API). The in-browser path needs a GitHub App installation token and a 90 MB base64 request through api.github.com, which can't be verified from here; EMERGENCY_UPLOAD_ENABLED stays false.
 - Public site reads Supabase with plain fetch to PostgREST (keeps supabase-js, 56 kB gz, out of the public bundle); admin uses supabase-js.
 - Media columns store paths relative to the media host ("v/<id>.mp4"); src/lib/media.ts resolves them (MEDIA_HOST switch).
@@ -41,3 +44,10 @@
 - /admin/emergency talks only to /api/emergency/* (bcrypt + TOTP, signed httpOnly cookie 2 h, lockout); health, data source, maintenance, resync. scripts/make-emergency-credentials.mjs (QR) and scripts/emergency-upload.mjs.
 - Verified the admin UI in Chromium with mocked network (creating a temporary admin account in the live project was blocked by the session's safety rules, so nothing touched the real database).
 - Gate: typecheck, lint, 28 tests, build pass.
+
+### Phase 4 - Sections, logo moments, section videos, brands (done)
+- Global: Lenis on GSAP's ticker synced to ScrollTrigger, custom cursor (PLAY/DRAG/VIEW/OPEN), film grain, reduced motion = fades only.
+- Logo moments: Ignition preloader (verified frame by frame), nav mark (minute ring, 8 s glint, hover parts blades), X-wipe route transition, light-lines, footer 3D logo over reflective floor + fog (SVG + reflection fallback), credit line with mini mark.
+- Sections 2-10 + FAQ + CTA/contact form + category pages; SectionMedia loops (lazy, paused off-screen, overlay, placeholder). Full player opens from any card with a FLIP.
+- Premium transitions: WebGL shader in the shared canvas (liquid for AI, slice-cut for Editing) with a CSS clip-path fallback of the same character.
+- Gate: typecheck, lint, 30 tests, build pass.

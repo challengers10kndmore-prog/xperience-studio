@@ -1,23 +1,47 @@
+import { useRef } from "react";
 import { useSiteData } from "@/data/DataProvider";
-import { XperienceLogo } from "@/components/brand/XperienceLogo";
+import { NavMark } from "@/components/brand/NavMark";
+import { SectionMedia } from "@/components/media/SectionMedia";
+import { gsap, SplitText, useGSAP } from "@/motion/gsap";
+import { reducedMotion } from "@/motion/useReducedMotion";
+import { scrollToTarget } from "@/motion/SmoothScroll";
+import { Magnetic } from "@/motion/Magnetic";
 
-/** Phase 1 placeholder hero (replaced by "The Assembly" in Phase 5). */
-export function HeroStatic() {
+/** Hero copy layer (shared by the static hero and "The Assembly"). */
+export function HeroCopy() {
   const { settings } = useSiteData();
+  const ref = useRef<HTMLDivElement>(null);
+  useGSAP(() => {
+    const h = ref.current!.querySelector("h1")!;
+    if (reducedMotion()) return;
+    const split = SplitText.create(h, { type: "lines,words", mask: "lines" });
+    gsap.timeline({ delay: document.documentElement.classList.contains("is-loading") ? 2.9 : 0.2 })
+      .from(split.words, { yPercent: 115, stagger: 0.05, duration: 1.4, ease: "expo" })
+      .from(ref.current!.querySelectorAll("[data-fade]"), { opacity: 0, y: 18, stagger: 0.08, duration: 1 }, 0.35);
+    return () => split.revert();
+  }, { scope: ref, dependencies: [settings.hero_headline] });
   return (
-    <section id="top" className="section media-placeholder relative flex min-h-dvh flex-col justify-end pb-[12vh] pt-[var(--nav-h)]">
-      <div className="max-w-5xl space-y-6">
-        <p className="eyebrow">AI Video · Video Editing</p>
-        <h1 className="text-[clamp(3rem,9vw,8.5rem)] font-semibold">{settings.hero_headline}</h1>
-        <p className="max-w-xl text-lg text-ash">{settings.hero_sub}</p>
-        <div className="flex flex-wrap gap-3">
-          <a href="#work" className="btn btn-primary">{settings.hero_cta_primary}</a>
-          <a href="#contact" className="btn btn-ghost">{settings.hero_cta_secondary}</a>
-        </div>
-        <p className="flex items-center gap-2 text-sm text-ash">
-          <XperienceLogo variant="mark" className="h-5 w-5" aria-hidden /> {settings.credit_line}
-        </p>
+    <div ref={ref} className="content max-w-5xl space-y-7">
+      <p className="eyebrow" data-fade>AI Video · Video Editing</p>
+      <h1 className="text-balance text-[clamp(3rem,8.6vw,8.5rem)] font-semibold">{settings.hero_headline}</h1>
+      <p className="max-w-xl text-lg text-chrome/75" data-fade>{settings.hero_sub}</p>
+      <div className="flex flex-wrap gap-3" data-fade>
+        <Magnetic><button type="button" onClick={() => scrollToTarget("#work")} className="btn btn-primary" data-cursor="play">{settings.hero_cta_primary}</button></Magnetic>
+        <Magnetic><button type="button" onClick={() => scrollToTarget("#contact")} className="btn btn-ghost">{settings.hero_cta_secondary}</button></Magnetic>
       </div>
+      <p className="flex items-center gap-2.5 text-sm text-ash" data-fade>
+        <NavMark className="h-6 w-6" /> {settings.credit_line}
+      </p>
+    </div>
+  );
+}
+
+/** Fallback hero (no WebGL / low GPU tier / reduced motion): section loop + copy. */
+export function HeroStatic() {
+  return (
+    <section id="top" className="section relative flex min-h-dvh flex-col justify-end pb-[12vh] pt-[var(--nav-h)]">
+      <SectionMedia sectionKey="hero" />
+      <HeroCopy />
     </section>
   );
 }
