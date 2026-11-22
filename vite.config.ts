@@ -10,18 +10,6 @@ export default defineConfig({
   build: {
     target: "es2022",
     chunkSizeWarningLimit: 1200,
-    rollupOptions: {
-      output: {
-        manualChunks(id: string) {
-          if (!id.includes("node_modules")) return undefined;
-          if (/three|@react-three|postprocessing|detect-gpu/.test(id)) return "three";
-          if (/gsap|lenis/.test(id)) return "motion";
-          if (/@supabase/.test(id)) return "supabase";
-          if (/@radix-ui|@dnd-kit|sonner/.test(id)) return "admin-ui";
-          return undefined;
-        },
-      },
-    },
   },
   test: {
     globals: true,

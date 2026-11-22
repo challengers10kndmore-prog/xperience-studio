@@ -1,35 +1,18 @@
+import { lazy, Suspense } from "react";
 import { Hero } from "@/components/sections/Hero";
-import { Manifesto } from "@/components/sections/Manifesto";
-import { PremiumSamples } from "@/components/sections/PremiumSamples";
-import { TwoCrafts } from "@/components/sections/TwoCrafts";
-import { BeforeAfter } from "@/components/sections/BeforeAfter";
-import { WorkLibrary } from "@/components/sections/WorkLibrary";
-import { Process } from "@/components/sections/Process";
-import { Toolkit } from "@/components/sections/Toolkit";
-import { Proof } from "@/components/sections/Proof";
-import { Services } from "@/components/sections/Services";
-import { Faq, FinaleCta } from "@/components/sections/Finale";
-import { LightLine } from "@/motion/LightLine";
+
+const BelowFold = lazy(() => import("./BelowFold"));
 
 export default function Home() {
   return (
     <>
       <Hero />
-      <Manifesto />
-      <PremiumSamples />
-      <LightLine />
-      <TwoCrafts />
-      <BeforeAfter />
-      <LightLine />
-      <WorkLibrary />
-      <Process />
-      <LightLine />
-      <Toolkit />
-      <Proof />
-      <LightLine />
-      <Services />
-      <Faq />
-      <FinaleCta />
+      {/* stable wrapper: React inserts the lazy sections here, never next to a GSAP pin-spacer */}
+      <div>
+        <Suspense fallback={<div className="min-h-dvh" />}>
+          <BelowFold />
+        </Suspense>
+      </div>
     </>
   );
 }

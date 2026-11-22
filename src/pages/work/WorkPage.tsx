@@ -40,7 +40,7 @@ export default function WorkPage() {
       .from(head.current.querySelectorAll("[data-fade]"), { opacity: 0, y: 20, stagger: 0.08, duration: 0.9 }, 0.3)
       .fromTo(head.current.querySelector("[data-media]"), { scale: 1.15 }, { scale: 1, duration: 2.4, ease: "expo" }, 0);
     return () => split.revert();
-  }, { scope: head, dependencies: [d, category] });
+  }, { scope: head, dependencies: [d, category], revertOnUpdate: true });
 
   if (!meta) return <Navigate to="/" replace />;
   return (
@@ -50,7 +50,7 @@ export default function WorkPage() {
         <div className="content">
           <button type="button" data-fade onClick={() => go("/")} className="eyebrow mb-10 inline-flex items-center gap-2 hover:text-chrome"><ArrowLeft className="size-4" /> Back to the reel</button>
           <p data-fade className={`eyebrow mb-4 ${meta.accent}`}>{category ? `${meta.title} / ${pretty(category)}` : "Discipline"}</p>
-          <h1 className="font-display text-[clamp(3.5rem,13vw,13rem)] font-semibold leading-[0.85]">{category ? pretty(category) : meta.title}</h1>
+          <h1 key={`${d}-${category ?? ""}`} className="font-display text-[clamp(3.5rem,13vw,13rem)] font-semibold leading-[0.85]">{category ? pretty(category) : meta.title}</h1>
           <div data-fade className="mt-8 flex flex-wrap items-end justify-between gap-6">
             <p className="max-w-xl text-lg text-chrome/80">{lead || meta.line}</p>
             <p className="timecode text-ash">{String(count).padStart(2, "0")} FILMS</p>

@@ -49,5 +49,5 @@ Source of truth for the brief: BUILD_PROMPT.md. Tick items as they finish. Resum
 - [x] 5.9 Phase gate
 
 ## Phase 6 - Polish & launch prep
-- [ ] 6.1 Lighthouse, fonts, lazy video, a11y, SEO/OG, vercel.json
-- [ ] 6.2 Final report + ask Daniel to approve going live
+- [x] 6.1 Lighthouse, fonts, lazy video, a11y, SEO/OG, vercel.json
+- [x] 6.2 Final report + ask Daniel to approve going live

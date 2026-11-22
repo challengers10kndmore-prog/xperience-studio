@@ -15,15 +15,17 @@ export function HeroCopy() {
     const h = ref.current!.querySelector("h1")!;
     if (reducedMotion()) return;
     const split = SplitText.create(h, { type: "lines,words", mask: "lines" });
+    // Only transforms here (no opacity): the copy counts as painted immediately, which keeps LCP fast
+    // even while the Ignition intro plays over it.
     gsap.timeline({ delay: document.documentElement.classList.contains("is-loading") ? 2.9 : 0.2 })
       .from(split.words, { yPercent: 115, stagger: 0.05, duration: 1.4, ease: "expo" })
-      .from(ref.current!.querySelectorAll("[data-fade]"), { opacity: 0, y: 18, stagger: 0.08, duration: 1 }, 0.35);
+      .from(ref.current!.querySelectorAll("[data-fade]"), { y: 18, stagger: 0.08, duration: 1 }, 0.35);
     return () => split.revert();
-  }, { scope: ref, dependencies: [settings.hero_headline] });
+  }, { scope: ref, dependencies: [settings.hero_headline], revertOnUpdate: true });
   return (
     <div ref={ref} className="content max-w-5xl space-y-7">
       <p className="eyebrow" data-fade>AI Video · Video Editing</p>
-      <h1 className="text-balance text-[clamp(3rem,8.6vw,8.5rem)] font-semibold md:max-w-[62vw] md:text-[clamp(3rem,6.6vw,8rem)]">{settings.hero_headline}</h1>
+      <h1 key={settings.hero_headline} className="text-balance text-[clamp(3rem,8.6vw,8.5rem)] font-semibold md:max-w-[62vw] md:text-[clamp(3rem,6.6vw,8rem)]">{settings.hero_headline}</h1>
       <p className="max-w-xl text-lg text-chrome/75" data-fade>{settings.hero_sub}</p>
       <div className="flex flex-wrap gap-3" data-fade>
         <Magnetic><button type="button" onClick={() => scrollToTarget("#work")} className="btn btn-primary" data-cursor="play">{settings.hero_cta_primary}</button></Magnetic>

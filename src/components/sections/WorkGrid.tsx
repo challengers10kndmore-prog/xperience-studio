@@ -78,7 +78,7 @@ function Card({ p }: { p: SiteProject }) {
   };
   return (
     <li data-card data-flip-id={p.id} className="break-inside-avoid">
-      <button ref={ref} type="button" data-cursor="play" aria-label={`Play ${p.title}`}
+      <button ref={ref} type="button" data-cursor="play"
         onClick={() => open(p, ref.current)} onPointerEnter={() => setHover(true)} onPointerMove={tilt}
         onPointerLeave={() => { setHover(false); if (ref.current) gsap.to(ref.current, { rotateX: 0, rotateY: 0, duration: 0.8 }); }}
         onFocus={() => setHover(true)} onBlur={() => setHover(false)}
@@ -90,7 +90,7 @@ function Card({ p }: { p: SiteProject }) {
         </div>
         <div className="absolute inset-x-0 bottom-0 space-y-2 p-4">
           <Tags p={p} />
-          <h3 className="font-display text-xl font-semibold leading-tight md:text-2xl">{p.title}</h3>
+          <h3 className="font-display text-xl font-semibold leading-tight md:text-2xl"><span className="sr-only">Play </span>{p.title}</h3>
           {p.category && <p className="eyebrow !text-[0.58rem]">{pretty(p.category)}</p>}
         </div>
       </button>

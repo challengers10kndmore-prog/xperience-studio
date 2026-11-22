@@ -20,6 +20,8 @@
 - 3D blades use a large inset bevel so the flat SVG outline reads as a ridged chrome blade.
 
 ## Blocked
+- Lighthouse mobile performance is ~74 (target 85) after 3 real attempts: (1) stopped three.js/admin chunks loading on the homepage (44 -> 76), (2) moved everything below the hero into a deferred chunk + dropped MorphSVG, (3) static hero shell in index.html. Remaining cost is the ~160 kB (gzip) entry (React, router, GSAP + plugins, Ignition) under 4x CPU throttling: LCP ~3.1 s, TBT ~500 ms. Next step: prerender the hero at build time (vite-ssg/react-dom/server + hydrateRoot) so the LCP text paints before JS, and load SplitText/ScrambleText/DrawSVG only for the intro. Accessibility 96, best practices 96, SEO 100, CLS 0.045. Measured in this container against vite preview; Vercel's CDN will be somewhat faster.
+- Safari iOS check: only Chromium is available here. Video uses muted + playsInline + preload="none" + posters (iOS-safe autoplay rules) and WebGL is gated by WebGL2 + GPU tier, but a real iPhone check is still needed (see final report).
 - Media repo not reachable from this session (not created / not shared). Pipeline is written and tested locally; setup runs when Daniel completes NEEDS #3.
 
 ## Phase summaries
@@ -58,3 +60,9 @@
 - At ~1: rim-lit solid with a scan-line sweep (rig idle + head-follow when the GLB has bones/clips); 5-7 featured shards orbit with hover title and click-to-play; scroll-out disperses particles upward and flies shards forward.
 - One shared renderer (drei View) for hero, premium transitions and footer logo; GPU tier < 2 / no WebGL2 / reduced motion -> hero loop + copy. Fixed a crash where React inserted next to a GSAP pin-spacer (pinned sections now sit in React-owned wrappers).
 - Gate: typecheck, lint, 30 tests, build pass. Screenshot docs/brand/hero-assembly.png. scripts/prepare-model.mjs for Daniel's model.
+
+### Phase 6 - Polish & launch prep (done, perf target logged under Blocked)
+- Mobile Lighthouse 44 -> ~74 perf, 96 a11y, 96 best practices, 100 SEO; CLS fixed (grain overlay); robots.txt; OG image public/og/xperience-og.jpg; JSON-LD; vercel.json SPA rewrites + cache headers.
+- Fixed a real bug: SplitText-split headings never updated when live data arrived (React wrote into detached text nodes). Split elements are now keyed by their text and revert before re-running.
+- Playwright e2e (desktop + mobile): Supabase blocked -> site renders from manifest.json, every <video> src on the media host, no release assets in <video>, skip link + player Escape. All pass. No horizontal overflow at 390 px; Two Crafts stacks on phones.
+- Meshy credit not needed yet (no model supplied).

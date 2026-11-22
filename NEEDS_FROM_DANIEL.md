@@ -71,3 +71,8 @@ The site works without these (placeholders are in place); fill them in when you 
   3. Meshy (meshy.ai, free tier) > Image to 3D > download GLB. If you use Meshy's free tier, tell me: the footer must then say "3D model generated with Meshy".
 - **Optional rig (breathing + head turns toward the cursor):** mixamo.com (free Adobe account) > Upload character > place markers > pick an "Breathing Idle" animation > Download FBX with skin > convert to GLB (e.g. in Blender: File > Import FBX, File > Export glTF Binary).
 - **Where:** send me the file, or run `node scripts/prepare-model.mjs your-file.glb` (it cleans and compresses it to `public/models/daniel.glb`, under 4 MB). The site picks it up automatically.
+
+## 8. Hosting (Phase 6, to see preview links)
+- **Vercel:** vercel.com > Add New > Project > import `xperience-studio` > Environment Variables: add the list in `docs/FINAL_REPORT.md` > Deploy. Use the `build` branch for previews.
+- **Supabase password-reset link:** once you have the Vercel URL: supabase.com > project > Authentication > URL Configuration > Site URL = that URL, and add `https://<that-url>/admin/login` under Redirect URLs.
+- **Check on your iPhone:** open the preview in Safari and tell me if anything looks off.
