@@ -133,7 +133,7 @@ function card({ bg, W, H, title, caption, discipline }) {
           h("div", { style: { width: Math.round(10 * s), height: Math.round(10 * s), borderRadius: 999, backgroundColor: tagColor, marginRight: Math.round(12 * s) } }), tag)),
       h("div", { style: { display: "flex", color: "#F2F3F7", fontFamily: "Clash Display", fontWeight: 600, fontSize: titleSize, lineHeight: 1.0, letterSpacing: -1, maxWidth: Math.round(W * 0.86) } }, title),
       caption ? h("div", { style: { display: "flex", marginTop: Math.round(18 * s), color: "rgba(230,232,238,0.86)", fontSize: Math.round(30 * s), lineHeight: 1.3, maxWidth: Math.round(W * 0.8) } }, caption) : null),
-    h("div", { style: { position: "absolute", top: Math.round(44 * s), right: Math.round(52 * s), display: "flex", alignItems: "center" } },
+    h("div", { style: { position: "absolute", top: Math.round(36 * s), right: Math.round(40 * s), display: "flex", alignItems: "center", padding: `${Math.round(8 * s)}px ${Math.round(16 * s)}px ${Math.round(8 * s)}px ${Math.round(10 * s)}px`, borderRadius: 999, backgroundColor: "rgba(7,6,13,0.62)" } },
       h("img", { src: MARK_URI, width: Math.round(54 * s), height: Math.round(54 * s) }),
       h("div", { style: { display: "flex", marginLeft: Math.round(12 * s), color: "#E6E8EE", fontFamily: "Michroma", fontSize: Math.round(15 * s), letterSpacing: Math.round(5 * s) } }, "XPERIENCE")),
   );
@@ -141,8 +141,14 @@ function card({ bg, W, H, title, caption, discipline }) {
 
 async function renderCard(posterFile, out, W, H, meta) {
   const [{ default: satori }, { Resvg }] = await Promise.all([import("satori"), import("@resvg/resvg-js")]);
-  // background: the poster, cover-cropped to the card by ffmpeg (satori's objectFit is limited)
-  const bgBuf = sh(["-i", posterFile, "-vf", `scale=${W}:${H}:force_original_aspect_ratio=increase,crop=${W}:${H}`, "-frames:v", "1", "-q:v", "3", "-f", "mjpeg", "-"]);
+  // background built by ffmpeg (satori's objectFit is limited): cover-crop when the shapes are close;
+  // otherwise (e.g. a 9:16 poster on a 1200x630 card) the whole frame sits on a blurred, darkened fill of itself.
+  const { width: pw, height: ph } = probe(posterFile);
+  const mismatch = Math.abs(Math.log((pw / ph) / (W / H))) > 0.35;
+  const vf = mismatch
+    ? `split[a][b];[a]scale=${W}:${H}:force_original_aspect_ratio=increase,crop=${W}:${H},boxblur=28:2,eq=brightness=-0.18:saturation=0.85[bg];[b]scale=${W}:${H}:force_original_aspect_ratio=decrease[fg];[bg][fg]overlay=x=(W-w)*0.78:y=(H-h)/2`
+    : `scale=${W}:${H}:force_original_aspect_ratio=increase,crop=${W}:${H}`;
+  const bgBuf = sh(["-i", posterFile, "-filter_complex", vf, "-frames:v", "1", "-q:v", "3", "-f", "mjpeg", "-"]);
   const bg = `data:image/jpeg;base64,${bgBuf.toString("base64")}`;
   const svg = await satori(card({ bg, W, H, ...meta }), { width: W, height: H, fonts: fonts() });
   const png = new Resvg(svg, { fitTo: { mode: "original" } }).render().asPng();
