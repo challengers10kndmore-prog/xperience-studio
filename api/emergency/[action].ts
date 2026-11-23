@@ -15,7 +15,7 @@ export async function GET(req: Request) {
   if (action === "session") return json({ authenticated: hasEmergencySession(req), configured: configured(), setup: setupState() });
   if (action === "setup-status") {
     // Diagnostics for setup: variable NAMES only (never values) + which deployment answered.
-    const names = Object.keys(process.env).filter((k) => /EMERG/i.test(k)).sort();
+    const names = Object.keys(process.env).filter((k) => /EMERG|GITHUB|GH_|TOKEN|SUPABASE|MEDIA/i.test(k) && !/^VERCEL_/.test(k)).sort();
     return json({
       setup: setupState(),
       diag: { names, env: process.env.VERCEL_ENV ?? null, branch: process.env.VERCEL_GIT_COMMIT_REF ?? null, commit: (process.env.VERCEL_GIT_COMMIT_SHA ?? "").slice(0, 7) || null },

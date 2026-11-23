@@ -70,7 +70,7 @@ export default function EmergencySetup() {
         {diag && !values && (
           <div className="rounded-xl border border-line bg-carbon p-4 font-mono text-xs text-ash">
             <p>Deployment: {diag.env ?? "?"} · branch {diag.branch ?? "?"} · commit {diag.commit ?? "?"}</p>
-            <p>EMERGENCY variables this deployment can see: {diag.names.length ? diag.names.join(", ") : "none"}</p>
+            <p>Settings this deployment can see: {diag.names.length ? diag.names.join(", ") : "none"}</p>
           </div>
         )}
 
