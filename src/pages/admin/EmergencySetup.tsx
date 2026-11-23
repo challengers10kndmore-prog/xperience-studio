@@ -32,10 +32,11 @@ export default function EmergencySetup() {
   const [values, setValues] = useState<Values | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [diag, setDiag] = useState<{ names: string[]; env: string | null; branch: string | null; commit: string | null } | null>(null);
 
   useEffect(() => {
     document.title = "Emergency login setup | Xperience";
-    fetch("/api/emergency/setup-status").then((r) => r.json()).then((j) => setState(j.setup)).catch(() => setState("offline"));
+    fetch("/api/emergency/setup-status", { cache: "no-store" }).then((r) => r.json()).then((j) => { setState(j.setup ?? "offline"); setDiag(j.diag ?? null); }).catch(() => setState("offline"));
   }, []);
 
   async function begin(e: FormEvent) {
@@ -66,6 +67,12 @@ export default function EmergencySetup() {
         {state === "offline" && <p className="text-amber-300">The server functions aren't reachable here. Open this page on your Vercel preview link.</p>}
         {state === "locked" && <p className="rounded-xl border border-line bg-carbon p-5">Emergency login is already set up, so this page is locked. Sign in at <Link className="underline" to="/admin/emergency">/admin/emergency</Link>.</p>}
         {state === "no-code" && <p className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-5 text-amber-100">Add <code>EMERGENCY_SETUP_CODE</code> in Vercel (Settings &gt; Environment Variables), redeploy, then reload this page.</p>}
+        {diag && state !== "open" && (
+          <div className="rounded-xl border border-line bg-carbon p-4 font-mono text-xs text-ash">
+            <p>Deployment: {diag.env ?? "?"} · branch {diag.branch ?? "?"} · commit {diag.commit ?? "?"}</p>
+            <p>EMERGENCY variables this deployment can see: {diag.names.length ? diag.names.join(", ") : "none"}</p>
+          </div>
+        )}
 
         {state === "open" && !totp && (
           <form onSubmit={begin} className="space-y-4 rounded-2xl border border-line bg-carbon p-6">

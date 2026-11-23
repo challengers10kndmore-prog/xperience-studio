@@ -13,7 +13,14 @@ import { dispatchSync, setMaintenance, setSource, syncStatus, SOURCE_MODES, type
 export async function GET(req: Request) {
   const action = actionOf(req);
   if (action === "session") return json({ authenticated: hasEmergencySession(req), configured: configured(), setup: setupState() });
-  if (action === "setup-status") return json({ setup: setupState() });
+  if (action === "setup-status") {
+    // Diagnostics for setup: variable NAMES only (never values) + which deployment answered.
+    const names = Object.keys(process.env).filter((k) => /EMERG/i.test(k)).sort();
+    return json({
+      setup: setupState(),
+      diag: { names, env: process.env.VERCEL_ENV ?? null, branch: process.env.VERCEL_GIT_COMMIT_REF ?? null, commit: (process.env.VERCEL_GIT_COMMIT_SHA ?? "").slice(0, 7) || null },
+    });
+  }
   if (!hasEmergencySession(req)) return err(401, "Sign in first.");
   if (action === "health") {
     const [supabase, status] = await Promise.all([pingSupabase(), syncStatus().catch((e: Error) => ({ error: e.message }))]);
