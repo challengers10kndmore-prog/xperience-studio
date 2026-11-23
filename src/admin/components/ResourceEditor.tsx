@@ -47,11 +47,11 @@ export function ResourceEditor({ res, row, open, onOpenChange, onSaved }: { res:
         <DialogTitle>{row ? `Edit ${res.singular}` : `New ${res.singular}`}</DialogTitle>
         <DialogDescription className="sr-only">Edit the fields and save.</DialogDescription>
         <form onSubmit={onSubmit} className="space-y-4">
+          {row && res.table === "projects" && Boolean(row.video_url) && <PosterPanel res={res} row={row} onQueued={() => { onSaved(row); onOpenChange(false); }} />}
           {res.fields.map((f) => (
             <FieldInput key={f.name} field={f} row={draft} value={draft[f.name]} onChange={(v) => setDraft((d) => ({ ...d, [f.name]: v }))}
               pendingFile={files[f.name]} onFile={(file) => setFiles((m) => { const n = { ...m }; if (file) n[f.name] = file; else delete n[f.name]; return n; })} />
           ))}
-          {row && res.table === "projects" && Boolean(row.video_url) && <PosterPanel res={res} row={row} onQueued={() => { onSaved(row); onOpenChange(false); }} />}
           {bigVideo && (
             <label className="flex items-start gap-2 rounded-lg border border-line p-3 text-sm">
               <input type="checkbox" className="mt-1 accent-violet" checked={compress} onChange={(e) => setCompress(e.target.checked)} />

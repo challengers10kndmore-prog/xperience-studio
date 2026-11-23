@@ -37,7 +37,7 @@ export function PosterPanel({ res, row, onQueued }: { res: Resource; row: AnyRow
       </div>
       <div className="space-y-2 rounded-md bg-void/50 p-2">
         <p className="text-xs text-ash">Pick a different frame</p>
-        <video ref={video} src={src} muted playsInline preload="metadata" crossOrigin="anonymous" className="aspect-video w-full rounded bg-black object-contain" />
+        <video ref={video} src={src} muted playsInline preload="metadata" onLoadedMetadata={(e) => { e.currentTarget.currentTime = t; }} className="mx-auto max-h-56 w-full rounded bg-black object-contain" />
         <input type="range" min={0} max={Math.max(0.1, dur || video.current?.duration || 1)} step={0.04} value={t} aria-label="Poster time"
           onChange={(e) => { const v = Number(e.target.value); setT(v); if (video.current) video.current.currentTime = v; }} className="w-full accent-violet" />
         <div className="flex flex-wrap items-center gap-2">
