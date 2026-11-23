@@ -72,3 +72,10 @@
 - /admin/login: "Set or forgot password?" email link (Supabase recovery -> choose password on the site).
 - /admin/emergency/setup: one-time setup guarded by EMERGENCY_SETUP_CODE; QR + password in the browser; shows the three EMERGENCY_* values to paste into Vercel; refuses (locks) once they exist; setup-code attempts rate-limited.
 - bcryptjs, otpauth, qrcode moved to dependencies for the Vercel functions.
+
+### Setup session (Daniel, browser only)
+- Media repo live: Pages on, secrets added, sync + keep-alive verified from GitHub Actions; test upload played from Pages and was cleaned up.
+- Vercel project imported; preview = https://xperience-studio-git-build-challengers10kndmore-prog.vercel.app (production branch main stays unbuilt until "yes, go live").
+- Supabase auth: site_url + redirect allow-list set to the Vercel addresses (project-scoped preview wildcard only).
+- Fixed: missing created_at on services/faqs/before_after/section_media (admin list error); tests moved out of api/ (were deployed as functions); api/tsconfig.json for Vercel's function type-check; Node pinned to 22.x.
+- Emergency setup page diagnostics show deployment + setting names (never values); used to find a GITHUB_TOKEN missing from Preview.

@@ -1,5 +1,24 @@
 # Needs from Daniel
 
+**Done (Nov 2026):** admin password (via email link), media repo + Pages + Actions secrets, GitHub token, Vercel project + variables, emergency login (browser setup + Authenticator add-on). Preview: https://xperience-studio-git-build-challengers10kndmore-prog.vercel.app
+
+**Still to do:** content in /admin (checklist below), then your 3D model, then say "yes, go live".
+
+## Content checklist (in the order that improves the site most)
+1. Site settings: contact email + WhatsApp (buttons appear), check hero copy.
+2. Projects: bulk upload your best films; fill brief / role / result; tick Published.
+3. Premium order: tick "Premium sample" on 3 to 6 films and drag the order.
+4. Featured: tick "Featured" on 5 to 7 films (the hero's orbiting videos).
+5. Section videos: hero, manifesto, finale first; then the rest (prompts in item 5 below).
+6. Stats and tools: real numbers, untick "placeholder"; confirm tool chips.
+7. Services: turnaround + "from" price. FAQs: replace the TBC numbers.
+8. Brands: transparent logos for Xanctum, Jobcondi, Xpers Streaming; confirm their lines.
+9. Before / After: 1 to 3 raw-vs-final pairs.
+10. Testimonials: quotes or short videos (hidden until there's one).
+11. Last: your 3D model (item 7 below).
+
+---
+
 Everything the site still needs from you. Each item says what, why, the steps, where it goes and which phase uses it.
 The site works without these (placeholders are in place); fill them in when you can.
 
