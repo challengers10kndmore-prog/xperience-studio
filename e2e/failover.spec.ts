@@ -29,8 +29,7 @@ test("every video resolves to the media host and release assets never reach <vid
   await page.goto("/?webgl=0");
   await expect(page.locator("main h1").first()).toContainText("From the manifest.");
   await page.locator("#library").scrollIntoViewIfNeeded();
-  await page.getByRole("button", { name: /Neon Genesis Spot/ }).first().hover();
-  await page.waitForTimeout(600);
+  await page.waitForTimeout(1200);
   const srcs = await page.$$eval("video[src]", (vs) => vs.map((v) => (v as HTMLVideoElement).src));
   expect(srcs.length).toBeGreaterThan(0);
   for (const s of srcs) {
@@ -47,7 +46,8 @@ test("keyboard: skip link and player close with Escape", async ({ page, isMobile
   await page.keyboard.press("Tab");
   await expect(page.getByText("Skip to content")).toBeFocused();
   await page.locator("#library").scrollIntoViewIfNeeded();
-  await page.getByRole("button", { name: /Creator Cut/ }).first().focus();
+  await page.getByRole("button", { name: "Fast-forward to the next film" }).click();
+  await page.getByRole("button", { name: /Play Creator Cut/ }).focus();
   await page.keyboard.press("Enter");
   await expect(page.getByRole("dialog", { name: "Creator Cut" })).toBeVisible();
   await page.keyboard.press("Escape");

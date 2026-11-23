@@ -7,6 +7,7 @@ import { isPlayableUrl, mediaUrl } from "@/lib/media";
 import { formatDuration } from "@/lib/utils";
 import { artFor, type SiteProject } from "@/data/placeholders";
 import { Tags } from "./ProjectMedia";
+import { displayTitle } from "@/lib/titles";
 
 type Open = (p: SiteProject, from?: HTMLElement | null) => void;
 const Ctx = createContext<Open>(() => {});
@@ -76,7 +77,7 @@ function PlayerOverlay({ p, rect, from, onClose }: { p: SiteProject; rect: DOMRe
       <div className="mb-3 flex items-center justify-between gap-4" data-player-ui>
         <div className="min-w-0">
           <p className="eyebrow">{p.category ?? (p.discipline === "ai" ? "AI Video" : "Video Editing")}</p>
-          <h2 className="truncate font-display text-2xl md:text-4xl">{p.title}</h2>
+          <h2 className="truncate font-display text-2xl md:text-4xl">{displayTitle(p.title)}</h2>
         </div>
         <button ref={closeBtn} onClick={close} className="btn btn-ghost !p-3" aria-label="Close player" data-cursor="close"><X className="size-5" /></button>
       </div>

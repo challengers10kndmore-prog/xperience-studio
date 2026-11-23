@@ -20,6 +20,7 @@ export const defaultSettings: SiteSettings = {
   maintenance: false,
   maintenance_message: "We're polishing a few frames. Back very soon.",
   updated_at: now,
+  layout: {},
   stats: [
     { key: "projects", label: "Projects delivered", value: 0, suffix: "+", todo: true },
     { key: "views", label: "Views generated", value: 0, suffix: "M+", todo: true },

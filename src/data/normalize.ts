@@ -20,7 +20,8 @@ export function normalizeSettings(row: SiteSettingsRow | null | undefined): Site
   const copy = deepMerge<SiteCopy>(defaultSettings.copy, row.copy);
   const merged = { ...defaultSettings } as SiteSettings;
   for (const [k, v] of Object.entries(row)) if (v !== null && v !== undefined) (merged as Record<string, unknown>)[k] = v;
-  return { ...merged, stats, tools, copy };
+  const layout = row.layout && typeof row.layout === "object" && !Array.isArray(row.layout) ? (row.layout as SiteSettings["layout"]) : {};
+  return { ...merged, stats, tools, copy, layout };
 }
 
 export type RawTables = Manifest["data"];

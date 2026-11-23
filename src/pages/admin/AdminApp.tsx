@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Navigate, NavLink, Route, Routes } from "react-router-dom";
 import { Toaster } from "sonner";
 import {
-  BarChart3, Clapperboard, Film, Gauge, HelpCircle, Inbox, LayoutGrid, LogOut, Menu, MessageSquareQuote, Settings, Sparkles, SplitSquareHorizontal, Wrench, ExternalLink,
+  BarChart3, Clapperboard, LayoutList, Film, Gauge, HelpCircle, Inbox, LayoutGrid, LogOut, Menu, MessageSquareQuote, Settings, Sparkles, SplitSquareHorizontal, Wrench, ExternalLink,
 } from "lucide-react";
 import { useAdmin, signOut } from "@/admin/auth";
 import { Button } from "@/components/ui/button";
@@ -14,10 +14,12 @@ import ProjectsPage from "@/admin/pages/ProjectsPage";
 import { SettingsPage, StatsToolsPage } from "@/admin/pages/SettingsPage";
 import MessagesPage from "@/admin/pages/MessagesPage";
 import AnalyticsPage from "@/admin/pages/AnalyticsPage";
+import CustomizePage from "@/admin/pages/CustomizePage";
 
 const NAV = [
   { to: "/admin", label: "Overview", icon: Gauge, end: true },
   { to: "/admin/projects", label: "Projects", icon: Film },
+  { to: "/admin/customize", label: "Website customization", icon: LayoutList },
   { to: "/admin/section-media", label: "Section videos", icon: Clapperboard },
   { to: "/admin/brands", label: "Brands", icon: Sparkles },
   { to: "/admin/testimonials", label: "Testimonials", icon: MessageSquareQuote },
@@ -69,6 +71,7 @@ export default function AdminApp() {
           <Routes>
             <Route index element={<OverviewPage />} />
             <Route path="projects" element={<ProjectsPage />} />
+            <Route path="customize" element={<CustomizePage />} />
             {["section-media", "brands", "testimonials", "services", "faqs", "before-after"].map((k) => (
               <Route key={k} path={k} element={<ResourcePage res={resourceByKey(k)!} />} />
             ))}

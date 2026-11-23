@@ -10,7 +10,7 @@ export const fixtureManifest: Manifest = {
       id: 1, hero_headline: "From the manifest.", hero_sub: "sub", hero_cta_primary: "Watch the reel", hero_cta_secondary: "Start a project",
       credit_line: "An Xperience production · Founded by Daniel Ogbeifun Osewe", tagline: "PLAY · CONNECT · EVOLVE", contact_email: "hi@example.com",
       whatsapp: null, seo_title: "t", seo_description: "d", og_image_url: null, maintenance: false, maintenance_message: null,
-      stats: [], tools: [], copy: {}, updated_at: t,
+      stats: [], tools: [], copy: {}, layout: {}, updated_at: t,
     },
     projects: [
       {

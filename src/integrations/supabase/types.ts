@@ -473,6 +473,7 @@ export type Database = {
           hero_headline: string | null
           hero_sub: string | null
           id: number
+          layout: Json
           maintenance: boolean
           maintenance_message: string | null
           og_image_url: string | null
@@ -493,6 +494,7 @@ export type Database = {
           hero_headline?: string | null
           hero_sub?: string | null
           id?: number
+          layout?: Json
           maintenance?: boolean
           maintenance_message?: string | null
           og_image_url?: string | null
@@ -513,6 +515,7 @@ export type Database = {
           hero_headline?: string | null
           hero_sub?: string | null
           id?: number
+          layout?: Json
           maintenance?: boolean
           maintenance_message?: string | null
           og_image_url?: string | null

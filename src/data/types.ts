@@ -34,7 +34,8 @@ export type SiteCopy = {
   finale: { headline: string; cta: string };
 };
 
-export type SiteSettings = Omit<SiteSettingsRow, "stats" | "tools" | "copy"> & {
+export type SiteSettings = Omit<SiteSettingsRow, "stats" | "tools" | "copy" | "layout"> & {
+  layout: import("./layout").Layout;
   stats: Stat[];
   tools: Tool[];
   copy: SiteCopy;
