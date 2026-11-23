@@ -67,7 +67,7 @@ export default function EmergencySetup() {
         {state === "offline" && <p className="text-amber-300">The server functions aren't reachable here. Open this page on your Vercel preview link.</p>}
         {state === "locked" && <p className="rounded-xl border border-line bg-carbon p-5">Emergency login is already set up, so this page is locked. Sign in at <Link className="underline" to="/admin/emergency">/admin/emergency</Link>.</p>}
         {state === "no-code" && <p className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-5 text-amber-100">Add <code>EMERGENCY_SETUP_CODE</code> in Vercel (Settings &gt; Environment Variables), redeploy, then reload this page.</p>}
-        {diag && state !== "open" && (
+        {diag && !values && (
           <div className="rounded-xl border border-line bg-carbon p-4 font-mono text-xs text-ash">
             <p>Deployment: {diag.env ?? "?"} · branch {diag.branch ?? "?"} · commit {diag.commit ?? "?"}</p>
             <p>EMERGENCY variables this deployment can see: {diag.names.length ? diag.names.join(", ") : "none"}</p>
