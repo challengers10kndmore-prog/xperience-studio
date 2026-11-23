@@ -22,7 +22,9 @@ export function planJobs(table, row) {
   const id = row.id ?? row.key;
   const jobs = [];
   for (const [field, src] of Object.entries(inbox)) {
-    if (!src || typeof src !== "string") continue;
+    if (field.startsWith("_")) continue; // instructions (_poster, _cover), not files
+    const isParts = src && typeof src === "object" && Array.isArray(src.parts) && src.parts.length > 0;
+    if (!src || (typeof src !== "string" && !isParts)) continue;
     const j = jobFor(table, row, id, field, src);
     if (j) jobs.push(j);
   }

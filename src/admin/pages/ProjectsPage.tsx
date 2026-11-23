@@ -12,7 +12,9 @@ import { SortableList } from "../components/SortableList";
 import { MediaThumb } from "../components/MediaThumb";
 import { resourceByKey, DISCIPLINES } from "../resources";
 import { saveOrder, saveResource, type Progress as P } from "../save";
-import { isVideoFile } from "../compressVideo";
+import { isVideoFile, COMPRESS_THRESHOLD_BYTES } from "../compressVideo";
+import { ensureInboxRoom } from "../upload";
+import { PublishAllButton } from "../components/PublishAllButton";
 import type { AnyRow } from "../db";
 
 const res = resourceByKey("projects")!;
@@ -30,12 +32,13 @@ export default function ProjectsPage() {
       </TabsList>
       <TabsContent value="all-projects">
         <ResourcePage res={res} filter={disc === "all" ? undefined : filter}
-          toolbar={
+          toolbar={<>
+            <PublishAllButton />
             <NativeSelect aria-label="Filter by discipline" value={disc} onChange={(e) => setDisc(e.target.value as typeof disc)} className="w-40">
               <option value="all">All disciplines</option>
               {DISCIPLINES.map((d) => <option key={d.value} value={d.value}>{d.label}</option>)}
             </NativeSelect>
-          } />
+          </>} />
       </TabsContent>
       <TabsContent value="bulk"><BulkUpload /></TabsContent>
       <TabsContent value="premium"><OrderList kind="premium" /></TabsContent>
@@ -85,6 +88,7 @@ function BulkUpload() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [running, setRunning] = useState(false);
   const [over, setOver] = useState(false);
+  const [compress, setCompress] = useState(false);
 
   const add = (list: FileList | null) => {
     const files = Array.from(list ?? []).filter(isVideoFile);
@@ -93,6 +97,8 @@ function BulkUpload() {
   };
 
   async function run() {
+    try { await ensureInboxRoom(jobs.filter((j) => !j.done).reduce((s, j) => s + j.file.size, 0)); }
+    catch (e) { toast.error(e instanceof Error ? e.message : "Not enough room in the inbox"); return; }
     setRunning(true);
     for (let i = 0; i < jobs.length; i++) {
       if (jobs[i].done) continue;
@@ -101,7 +107,7 @@ function BulkUpload() {
       const title = file.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ").replace(/\s+/g, " ").trim();
       try {
         await saveResource(res, { title, slug: `${slugify(title)}-${Math.random().toString(36).slice(2, 6)}`, discipline, aspect_ratio: "16:9", published: false, tools: [] },
-          { video_url: file }, (p) => set({ progress: p }));
+          { video_url: file }, (p) => set({ progress: p }), { compress });
         set({ done: true });
       } catch (e) {
         set({ error: e instanceof Error ? e.message : "Failed" });
@@ -137,11 +143,17 @@ function BulkUpload() {
           {jobs.map((j, i) => (
             <li key={i} className="rounded-lg border border-line bg-carbon p-3 text-sm">
               <div className="flex justify-between gap-2"><span className="truncate">{j.file.name}</span>
-                <span className={j.error ? "text-rose-300" : j.done ? "text-emerald-300" : "text-ash"}>{j.error ?? (j.done ? "Uploaded · publishing" : j.progress?.stage ?? "Waiting")}</span></div>
+                <span className={j.error ? "text-rose-300" : j.done ? "text-emerald-300" : "text-ash"}>{j.error ?? (j.done ? "Uploaded · publishing" : j.progress ? `${j.progress.stage}${j.progress.ratio !== undefined ? ` ${Math.round(j.progress.ratio * 100)}%` : ""}${j.progress.note?.includes("part") ? ` · ${j.progress.note.split(" · ").pop()}` : ""}` : "Waiting")}</span></div>
               {j.progress?.ratio !== undefined && !j.done && <Progress className="mt-2" value={j.progress.ratio * 100} />}
             </li>
           ))}
         </ul>
+      )}
+      {jobs.some((j) => j.file.size > COMPRESS_THRESHOLD_BYTES) && (
+        <label className="flex items-start gap-2 rounded-lg border border-line p-3 text-sm">
+          <input type="checkbox" className="mt-1 accent-violet" checked={compress} onChange={(e) => setCompress(e.target.checked)} disabled={running} />
+          <span><b>Compress before upload (faster)</b><br /><span className="text-xs text-ash">Off = originals upload in 45 MB pieces with no quality loss (recommended). Files under 45 MB are never compressed.</span></span>
+        </label>
       )}
       <div className="flex gap-2">
         <Button onClick={run} disabled={running || !jobs.some((j) => !j.done)}>{running ? "Uploading…" : `Upload ${jobs.filter((j) => !j.done).length} video(s)`}</Button>

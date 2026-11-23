@@ -7,11 +7,12 @@ import { mediaUrl } from "@/lib/media";
 export const ProjectMedia = forwardRef<HTMLVideoElement, { p: SiteProject; play?: boolean; className?: string; useFull?: boolean }>(
   function ProjectMedia({ p, play, className = "", useFull }, ref) {
     const src = useFull ? p.video_url : p.teaser_url || p.video_url;
-    if (!src && !p.poster_url) {
+    const poster = p.show_caption && p.cover_url ? p.cover_url : p.poster_url;
+    if (!src && !poster) {
       return <div className={`h-full w-full ${className}`} style={{ background: artFor(p.id, p.discipline) }} aria-hidden />;
     }
-    if (!src) return <img src={mediaUrl(p.poster_url)} alt="" loading="lazy" className={`h-full w-full object-cover ${className}`} />;
-    return <LazyVideo ref={ref} src={src} poster={p.poster_url} play={play} autoPlayInView={play === undefined} className={`h-full w-full object-cover ${className}`} />;
+    if (!src) return <img src={mediaUrl(poster)} alt="" loading="lazy" className={`h-full w-full object-cover ${className}`} />;
+    return <LazyVideo ref={ref} src={src} poster={poster} play={play} autoPlayInView={play === undefined} className={`h-full w-full object-cover ${className}`} />;
   },
 );
 

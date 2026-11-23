@@ -44,6 +44,7 @@ export type Database = {
           media_error: string | null
           media_status: Database["public"]["Enums"]["media_status"]
           media_synced_at: string | null
+          poster_time: number | null
           poster_url: string | null
           published: boolean
           sort_order: number
@@ -61,6 +62,7 @@ export type Database = {
           media_error?: string | null
           media_status?: Database["public"]["Enums"]["media_status"]
           media_synced_at?: string | null
+          poster_time?: number | null
           poster_url?: string | null
           published?: boolean
           sort_order?: number
@@ -78,6 +80,7 @@ export type Database = {
           media_error?: string | null
           media_status?: Database["public"]["Enums"]["media_status"]
           media_synced_at?: string | null
+          poster_time?: number | null
           poster_url?: string | null
           published?: boolean
           sort_order?: number
@@ -223,7 +226,9 @@ export type Database = {
           aspect_ratio: string
           brand_id: string | null
           brief: string | null
+          caption: string | null
           category: string | null
+          cover_url: string | null
           created_at: string
           description: string | null
           discipline: Database["public"]["Enums"]["discipline"]
@@ -238,11 +243,15 @@ export type Database = {
           media_error: string | null
           media_status: Database["public"]["Enums"]["media_status"]
           media_synced_at: string | null
+          og_url: string | null
+          poster_source: string
+          poster_time: number | null
           poster_url: string | null
           premium_order: number | null
           published: boolean
           result: string | null
           role: string | null
+          show_caption: boolean
           slug: string
           sort_order: number
           subcategory: string | null
@@ -256,7 +265,9 @@ export type Database = {
           aspect_ratio?: string
           brand_id?: string | null
           brief?: string | null
+          caption?: string | null
           category?: string | null
+          cover_url?: string | null
           created_at?: string
           description?: string | null
           discipline: Database["public"]["Enums"]["discipline"]
@@ -271,11 +282,15 @@ export type Database = {
           media_error?: string | null
           media_status?: Database["public"]["Enums"]["media_status"]
           media_synced_at?: string | null
+          og_url?: string | null
+          poster_source?: string
+          poster_time?: number | null
           poster_url?: string | null
           premium_order?: number | null
           published?: boolean
           result?: string | null
           role?: string | null
+          show_caption?: boolean
           slug: string
           sort_order?: number
           subcategory?: string | null
@@ -289,7 +304,9 @@ export type Database = {
           aspect_ratio?: string
           brand_id?: string | null
           brief?: string | null
+          caption?: string | null
           category?: string | null
+          cover_url?: string | null
           created_at?: string
           description?: string | null
           discipline?: Database["public"]["Enums"]["discipline"]
@@ -304,11 +321,15 @@ export type Database = {
           media_error?: string | null
           media_status?: Database["public"]["Enums"]["media_status"]
           media_synced_at?: string | null
+          og_url?: string | null
+          poster_source?: string
+          poster_time?: number | null
           poster_url?: string | null
           premium_order?: number | null
           published?: boolean
           result?: string | null
           role?: string | null
+          show_caption?: boolean
           slug?: string
           sort_order?: number
           subcategory?: string | null
@@ -516,6 +537,7 @@ export type Database = {
           media_status: Database["public"]["Enums"]["media_status"]
           media_synced_at: string | null
           name: string
+          poster_time: number | null
           poster_url: string | null
           published: boolean
           quote: string | null
@@ -534,6 +556,7 @@ export type Database = {
           media_status?: Database["public"]["Enums"]["media_status"]
           media_synced_at?: string | null
           name: string
+          poster_time?: number | null
           poster_url?: string | null
           published?: boolean
           quote?: string | null
@@ -552,6 +575,7 @@ export type Database = {
           media_status?: Database["public"]["Enums"]["media_status"]
           media_synced_at?: string | null
           name?: string
+          poster_time?: number | null
           poster_url?: string | null
           published?: boolean
           quote?: string | null

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { adminApi, type SyncStatus } from "../api";
 import { InboxMeter } from "../components/InboxMeter";
+import { PublishAllButton } from "../components/PublishAllButton";
 import { db } from "../db";
 
 const ago = (iso?: string | null) => {
@@ -56,9 +57,10 @@ export default function OverviewPage() {
                 <Row k="Supabase keep-alive" v={ago(s?.keepAliveAt ?? s?.lastKeepAlive?.updated_at)} href={s?.lastKeepAlive?.html_url} />
               </>
             )}
+            <div className="flex flex-wrap gap-2"><PublishAllButton variant="default" />
             <Button size="sm" variant="secondary" onClick={async () => { try { await adminApi.publish("manifest"); toast.success("Publishing changes (about a minute)."); } catch (e) { toast.error(e instanceof Error ? e.message : "Failed"); } }}>
-              <RefreshCw /> Publish changes now
-            </Button>
+              <RefreshCw /> Publish text changes
+            </Button></div>
           </CardContent>
         </Card>
         <Card>

@@ -49,3 +49,19 @@ describe("hero frame sequence", () => {
     expect(a).toContain("out/f%03d.webp");
   });
 });
+
+// @ts-expect-error plain .mjs module without types
+import { cleanTitle, draftCaption } from "./posters.mjs";
+describe("chunked uploads + captions", () => {
+  it("plans a job for a file uploaded in parts, and skips instruction keys", () => {
+    const jobs = planJobs("projects", { id: "x", inbox: { video_url: { parts: ["a.part001", "a.part002"], size: 9 }, _poster: { auto: true }, _cover: true } });
+    expect(jobs).toHaveLength(1);
+    expect(jobs[0].src).toEqual({ parts: ["a.part001", "a.part002"], size: 9 });
+  });
+  it("cleans export-style titles and drafts a one-line caption", () => {
+    expect(cleanTitle("Arabic coffee service brand 202607101846")).toBe("Arabic coffee service brand");
+    expect(draftCaption("Net me", "")).toBe("Net me");
+    const c = draftCaption("X", "A very long brief that goes on and on about the project and what it did for the client and the launch and more words here.");
+    expect(c.length).toBeLessThanOrEqual(90);
+  });
+});

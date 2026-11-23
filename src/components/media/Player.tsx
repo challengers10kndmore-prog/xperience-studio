@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { X, Download } from "lucide-react";
+import { X, Download, Share2 } from "lucide-react";
 import { gsap } from "@/motion/gsap";
 import { reducedMotion } from "@/motion/useReducedMotion";
 import { isPlayableUrl, mediaUrl } from "@/lib/media";
@@ -12,9 +12,17 @@ type Open = (p: SiteProject, from?: HTMLElement | null) => void;
 const Ctx = createContext<Open>(() => {});
 export const usePlayer = () => useContext(Ctx);
 
-export function PlayerProvider({ children }: { children: ReactNode }) {
+export function PlayerProvider({ children, projects = [] }: { children: ReactNode; projects?: SiteProject[] }) {
   const [state, setState] = useState<{ p: SiteProject; rect: DOMRect | null; from: HTMLElement | null } | null>(null);
   const open = useCallback<Open>((p, from) => setState({ p, rect: from?.getBoundingClientRect() ?? null, from: from ?? null }), []);
+  // shared links (/p/:slug -> /?project=slug) open that film straight away
+  const opened = useRef(false);
+  useEffect(() => {
+    if (opened.current || !projects.length) return;
+    const slug = new URLSearchParams(location.search).get("project");
+    const p = slug ? projects.find((x) => x.slug === slug) : null;
+    if (p) { opened.current = true; setTimeout(() => setState({ p, rect: null, from: null }), 3200); }
+  }, [projects]);
   return (
     <Ctx.Provider value={open}>
       {children}
@@ -90,6 +98,10 @@ function PlayerOverlay({ p, rect, from, onClose }: { p: SiteProject; rect: DOMRe
         <div className="flex flex-col items-start gap-2 md:items-end">
           <Tags p={p} />
           <span className="timecode text-ash">{formatDuration(p.duration_s)}</span>
+          {!p.placeholder && <button type="button" className="inline-flex items-center gap-1.5 text-ash underline-offset-4 hover:text-chrome hover:underline" onClick={async () => {
+            const url = `${location.origin}/p/${p.slug}`;
+            try { if (navigator.share) await navigator.share({ title: p.title, url }); else { await navigator.clipboard.writeText(url); alert("Link copied"); } } catch { /* cancelled */ }
+          }}><Share2 className="size-4" /> Share</button>}
           {p.full_video_url && <a href={p.full_video_url} className="inline-flex items-center gap-1.5 text-ash underline-offset-4 hover:text-chrome hover:underline" target="_blank" rel="noreferrer"><Download className="size-4" /> Full-quality file</a>}
         </div>
       </div>

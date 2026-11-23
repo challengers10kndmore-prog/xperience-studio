@@ -7,7 +7,7 @@ import { err, json, readJson, sameOrigin } from "./_lib/http.js";
 import { verifyAdmin } from "./_lib/supabase.js";
 import { dispatchSync } from "./_lib/github.js";
 
-export const TABLES = ["projects", "section_media", "brands", "testimonials", "services", "before_after", "manifest"] as const;
+export const TABLES = ["projects", "section_media", "brands", "testimonials", "services", "before_after", "manifest", "all"] as const;
 
 export async function POST(req: Request) {
   if (!sameOrigin(req)) return err(403, "Bad origin");

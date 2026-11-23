@@ -6,7 +6,7 @@
 import type { FFmpeg } from "@ffmpeg/ffmpeg";
 
 const CORE_BASE = "https://unpkg.com/@ffmpeg/core@0.12.10/dist/umd";
-export const COMPRESS_THRESHOLD_BYTES = 40 * 1024 * 1024;
+export const COMPRESS_THRESHOLD_BYTES = 45 * 1024 * 1024;
 /** ffmpeg.wasm runs in a 2 GB heap; bigger inputs are uploaded as-is. */
 export const WASM_INPUT_LIMIT = 1.6 * 1024 * 1024 * 1024;
 const VIDEO_EXT = /\.(mp4|mov|m4v|webm|mkv|avi|wmv|mpe?g|m2ts|mts|3gp|ogv)$/i;

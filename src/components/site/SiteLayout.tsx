@@ -37,7 +37,7 @@ export function SiteLayout() {
     <WebGLProvider>
       <SmoothScroll>
         <XWipeProvider>
-          <PlayerProvider>
+          <PlayerProvider projects={data.projects}>
             <a href="#main" className="sr-only-focusable fixed left-4 top-4 z-[600] rounded bg-violet px-4 py-2 text-white">Skip to content</a>
             <Nav markHidden={igniting} />
             <main id="main">

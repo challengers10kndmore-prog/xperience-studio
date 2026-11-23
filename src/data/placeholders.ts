@@ -8,6 +8,7 @@ const t = "2026-11-22T00:00:00.000Z";
 const base = {
   subcategory: null, description: null, brand_id: null, full_video_url: null, video_url: null, poster_url: null, teaser_url: null,
   published: true, media_status: "published" as const, media_synced_at: null, created_at: t, updated_at: t, is_featured: true,
+  caption: null, show_caption: false, cover_url: null, og_url: null,
 };
 
 const raw: Omit<SiteProject, "placeholder">[] = [

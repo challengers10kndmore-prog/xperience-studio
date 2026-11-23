@@ -3,7 +3,7 @@ import type { Database } from "@/integrations/supabase/types";
 type Row<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Row"];
 
 /** Columns hidden from the public snapshot. */
-type Internal = "inbox" | "inbox_path" | "media_error";
+type Internal = "inbox" | "inbox_path" | "media_error" | "poster_time" | "poster_source";
 
 export type Project = Omit<Row<"projects">, Internal>;
 export type Brand = Omit<Row<"brands">, "inbox">;
