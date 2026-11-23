@@ -2,7 +2,7 @@
 
 **Done (Nov 2026):** admin password (via email link), media repo + Pages + Actions secrets, GitHub token, Vercel project + variables, emergency login (browser setup + Authenticator add-on). Preview: https://xperience-studio-git-build-challengers10kndmore-prog.vercel.app
 
-**Still to do:** content in /admin (checklist below), then your 3D model, then say "yes, go live".
+**Still to do:** content in /admin (checklist below), including the two hero videos, then say "yes, go live". (No 3D model needed any more.)
 
 ## Content checklist (in the order that improves the site most)
 1. Site settings: contact email + WhatsApp (buttons appear), check hero copy.
@@ -15,7 +15,10 @@
 8. Brands: transparent logos for Xanctum, Jobcondi, Xpers Streaming; confirm their lines.
 9. Before / After: 1 to 3 raw-vs-final pairs.
 10. Testimonials: quotes or short videos (hidden until there's one).
-11. Last: your 3D model (item 7 below).
+11. Hero videos (Google Flow), in admin > Section videos:
+    - **Hero: assembly**: 8 s, you assembling from particles; desktop 16:9 + mobile 9:16. The sync job turns it into ~96 frames the cursor scrubs. The LAST frame must match the first frame of the idle loop. Poster = that end frame (made automatically if you don't upload one).
+    - **Hero: idle loop**: 8 s seamless loop, same framing as the assembly's end; desktop 16:9 + mobile 9:16.
+    - Keep the camera locked, the left third dark and empty, no audio needed.
 
 ---
 
@@ -81,15 +84,8 @@ The site works without these (placeholders are in place); fill them in when you 
 - **Contact:** your email and WhatsApp number (admin > Site settings) so the buttons appear.
 - **Testimonials:** quotes or short videos from clients (admin > Testimonials). The block stays hidden until there's one.
 
-## 7. Your 3D model for the hero (Phase 5, any time)
-- **What:** a 3D model of you. Until then a simple stand-in figure assembles from particles (see docs/brand/hero-assembly.png).
-- **Photos first:** 4 photos in flat, even light (no harsh shadows): front, back, left, right. Plus one full-body front shot standing in an A-pose (arms slightly away from your sides), plain background.
-- **Make the model (free), pick one:**
-  1. Hunyuan3D-2 on Hugging Face (search "Hunyuan3D-2 space") > upload the A-pose front photo > Generate > download GLB.
-  2. TRELLIS on Hugging Face (search "TRELLIS space") > same steps.
-  3. Meshy (meshy.ai, free tier) > Image to 3D > download GLB. If you use Meshy's free tier, tell me: the footer must then say "3D model generated with Meshy".
-- **Optional rig (breathing + head turns toward the cursor):** mixamo.com (free Adobe account) > Upload character > place markers > pick an "Breathing Idle" animation > Download FBX with skin > convert to GLB (e.g. in Blender: File > Import FBX, File > Export glTF Binary).
-- **Where:** send me the file, or run `node scripts/prepare-model.mjs your-file.glb` (it cleans and compresses it to `public/models/daniel.glb`, under 4 MB). The site picks it up automatically.
+## 7. (Removed) 3D model
+Not needed: the hero is video-driven now (see checklist item 11).
 
 ## 8. Hosting (Phase 6, to see preview links)
 - **Vercel:** vercel.com > Add New > Project > import `xperience-studio` > Environment Variables: add the list in `docs/FINAL_REPORT.md` > Deploy. Use the `build` branch for previews.

@@ -67,12 +67,13 @@ export const resources: Resource[] = [
   },
   {
     key: "section-media", table: "section_media", pk: "key", title: "Section videos", singular: "section video", hasMedia: true,
-    description: "Background loops behind each section. 8–10 s, seamless, no audio, left third dark. Upload a 16:9 desktop and a 9:16 mobile version.",
-    summary: (r) => ({ primary: str(r.label || r.key), secondary: r.desktop_url ? "Loop uploaded" : "Placeholder (no loop yet)", thumb: r.poster_url as string | null }),
+    description: "Background loops behind each section (8–10 s, seamless, no audio, left third dark), plus the two hero videos: “Hero: assembly” (8 s, played as frames you scrub with the cursor) and “Hero: idle loop” (8 s). Upload a 16:9 desktop and a 9:16 mobile version of each.",
+    summary: (r) => ({ primary: str(r.label || r.key), secondary: `${r.desktop_url ? "Desktop ✓" : "Desktop: placeholder"} · ${r.mobile_url ? "Mobile ✓" : "Mobile: placeholder"}${r.key === "hero-assembly" ? ` · ${Object.keys((r.frames as object) ?? {}).length ? "frames ready" : "no frames yet"}` : ""}`, thumb: r.poster_url as string | null }),
     fields: [
       { name: "label", label: "Label", type: "text" },
       { name: "desktop_url", label: "Desktop loop (16:9)", type: "media", accept: "video", loop: true },
       { name: "mobile_url", label: "Mobile loop (9:16)", type: "media", accept: "video", loop: true },
+      { name: "poster_url", label: "Poster image (optional; for Hero: assembly use the END frame. One is made automatically)", type: "media", accept: "image" },
       { name: "overlay_opacity", label: "Dark overlay (0 to 1)", type: "number", help: "Higher = darker. Keeps text readable." },
       { name: "prompt", label: "Generation prompt (reference)", type: "textarea" },
       { name: "published", label: "Show loop", type: "bool" },

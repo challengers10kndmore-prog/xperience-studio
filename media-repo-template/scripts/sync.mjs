@@ -8,7 +8,7 @@ import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
 import { execFileSync } from "node:child_process";
-import { planJobs, ffmpegArgs, bitrateFor, posterArgs, buildManifest, MAX_BYTES } from "./lib.mjs";
+import { planJobs, ffmpegArgs, bitrateFor, posterArgs, frameArgs, buildManifest, MAX_BYTES } from "./lib.mjs";
 const columns = JSON.parse(fs.readFileSync(new URL("./publicColumns.json", import.meta.url), "utf8"));
 
 const SB = process.env.SUPABASE_URL?.replace(/\/$/, "");
@@ -114,8 +114,17 @@ async function processRow(table, row) {
     patch[job.field] = job.out;
     if (job.poster) {
       const dest = path.join(ROOT, job.poster); ensureDir(dest);
-      sh("ffmpeg", posterArgs(input, dest, Math.min(1, info.duration * 0.1).toFixed(2)));
+      sh("ffmpeg", posterArgs(input, dest, Math.min(1, info.duration * 0.1).toFixed(2), job.posterAtEnd));
       if (table !== "section_media" || job.field === "desktop_url") patch.poster_url = job.poster;
+    }
+    if (job.frames) {
+      const dir = path.join(ROOT, job.frames.dir);
+      fs.rmSync(dir, { recursive: true, force: true });
+      fs.mkdirSync(dir, { recursive: true });
+      sh("ffmpeg", frameArgs(input, dir, job.frames, info.duration));
+      const count = fs.readdirSync(dir).filter((f) => f.endsWith(".webp")).length;
+      if (!count) throw new Error("frame extraction produced no frames");
+      patch.frames = { ...(patch.frames ?? row.frames ?? {}), [job.frames.variant]: { path: job.frames.dir, count, w: job.frames.w, h: job.frames.h, ext: "webp", pattern: "f%03d" } };
     }
     if (job.teaser) { transcode(input, job.teaser, { audio: false, teaser: true }); patch.teaser_url = job.teaser; }
     if (table === "projects" && job.field === "video_url") {

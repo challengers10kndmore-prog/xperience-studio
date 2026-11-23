@@ -332,6 +332,7 @@ export type Database = {
         Row: {
           created_at: string
           desktop_url: string | null
+          frames: Json
           inbox: Json
           key: string
           label: string | null
@@ -348,6 +349,7 @@ export type Database = {
         Insert: {
           created_at?: string
           desktop_url?: string | null
+          frames?: Json
           inbox?: Json
           key: string
           label?: string | null
@@ -364,6 +366,7 @@ export type Database = {
         Update: {
           created_at?: string
           desktop_url?: string | null
+          frames?: Json
           inbox?: Json
           key?: string
           label?: string | null

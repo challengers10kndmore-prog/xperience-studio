@@ -59,12 +59,12 @@ export const defaultSettings: SiteSettings = {
 };
 
 const sm = (key: string, label: string): SectionMedia => ({
-  key, label, prompt: null, desktop_url: null, mobile_url: null, poster_url: null, overlay_opacity: 0.6,
+  key, label, prompt: null, desktop_url: null, mobile_url: null, poster_url: null, overlay_opacity: 0.6, frames: {},
   published: true, media_status: "published", media_synced_at: null, created_at: now, updated_at: now,
 });
 
 export const SECTION_KEYS = [
-  "hero", "manifesto", "premium-intro", "crafts-ai", "crafts-editing", "library", "process", "toolkit", "proof",
+  "hero", "hero-assembly", "hero-idle", "manifesto", "premium-intro", "crafts-ai", "crafts-editing", "library", "process", "toolkit", "proof",
   "service-ai-ad", "service-music", "service-social", "service-longform", "finale",
 ] as const;
 export type SectionKey = (typeof SECTION_KEYS)[number];

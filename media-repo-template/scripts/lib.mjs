@@ -2,6 +2,19 @@
 
 export const MAX_BYTES = 95 * 1024 * 1024;
 
+/** Frame sequences: ~12 fps (96 frames for 8 s), capped, sized for each layout. */
+export const FRAME_FPS = 12;
+export const MAX_FRAMES = 120;
+export const FRAME_SIZES = { desktop: { w: 1280, h: 720 }, mobile: { w: 540, h: 960 } };
+
+/** ffmpeg args to cut a video into f001.webp, f002.webp, ... covering the frame (crop to the target aspect). */
+export function frameArgs(input, dir, { w, h }, durationS) {
+  const fps = Math.min(FRAME_FPS, MAX_FRAMES / Math.max(durationS, 0.1));
+  return ["-y", "-hide_banner", "-loglevel", "error", "-i", input,
+    "-vf", `fps=${fps.toFixed(4)},scale=${w}:${h}:force_original_aspect_ratio=increase,crop=${w}:${h}`,
+    "-frames:v", String(MAX_FRAMES), "-an", "-c:v", "libwebp", "-quality", "68", "-compression_level", "4", `${dir}/f%03d.webp`];
+}
+
 /** Which inbox fields become which published files, per table. */
 export function planJobs(table, row) {
   const inbox = { ...(row.inbox ?? {}) };
@@ -22,11 +35,14 @@ function jobFor(table, row, id, field, src) {
       if (field === "video_url") return { field, src, kind: "video", out: `v/${id}.mp4`, audio: true, poster: `p/${id}.jpg`, teaser: `t/${id}.mp4`, master: true };
       if (field === "poster_url") return { field, src, kind: "image", out: `p/${id}.jpg` };
       return null;
-    case "section_media":
-      if (field === "desktop_url") return { field, src, kind: "loop", out: `s/${id}-desktop.mp4`, poster: `s/${id}-desktop.jpg` };
-      if (field === "mobile_url") return { field, src, kind: "loop", out: `s/${id}-mobile.mp4`, poster: `s/${id}-mobile.jpg`, posterField: null };
+    case "section_media": {
+      // The hero assembly video is also cut into a WebP frame sequence (scrubbed on a canvas); its poster is the END frame.
+      const seq = id === "hero-assembly";
+      if (field === "desktop_url") return { field, src, kind: "loop", out: `s/${id}-desktop.mp4`, poster: `s/${id}-desktop.jpg`, posterAtEnd: seq, frames: seq ? { variant: "desktop", dir: `s/${id}-desktop`, ...FRAME_SIZES.desktop } : undefined };
+      if (field === "mobile_url") return { field, src, kind: "loop", out: `s/${id}-mobile.mp4`, poster: `s/${id}-mobile.jpg`, posterAtEnd: seq, frames: seq ? { variant: "mobile", dir: `s/${id}-mobile`, ...FRAME_SIZES.mobile } : undefined };
       if (field === "poster_url") return { field, src, kind: "image", out: `s/${id}-poster.jpg` };
       return null;
+    }
     case "brands":
       if (field === "logo_url") return { field, src, kind: "logo", out: `b/${id}.png` };
       return null;
@@ -68,8 +84,9 @@ export function bitrateFor(durationS, audio, maxBytes = MAX_BYTES) {
   return Math.max(300, Math.floor(totalKbps - (audio ? 128 : 0)));
 }
 
-export function posterArgs(input, output, atS) {
-  return ["-y", "-hide_banner", "-loglevel", "error", "-ss", String(atS), "-i", input, "-frames:v", "1", "-vf", "scale='min(1600,iw)':-2", "-q:v", "3", output];
+export function posterArgs(input, output, atS, fromEnd = false) {
+  const seek = fromEnd ? ["-sseof", "-0.25"] : ["-ss", String(atS)];
+  return ["-y", "-hide_banner", "-loglevel", "error", ...seek, "-i", input, "-update", "1", "-frames:v", "1", "-vf", "scale='min(1600,iw)':-2", "-q:v", "3", output];
 }
 
 /** Shape the published snapshot. Keeps maintenance from the previous manifest. */

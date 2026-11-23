@@ -32,3 +32,20 @@ describe("media sync planning", () => {
     expect(m.version).toBe(1);
   });
 });
+
+// @ts-expect-error plain .mjs module without types
+import { frameArgs } from "./lib.mjs";
+describe("hero frame sequence", () => {
+  it("marks hero-assembly uploads for frame extraction with an end-frame poster", () => {
+    const jobs = planJobs("section_media", { key: "hero-assembly", inbox: { desktop_url: "a.mp4", mobile_url: "b.mp4" } });
+    expect(jobs[0]).toMatchObject({ posterAtEnd: true, frames: { variant: "desktop", dir: "s/hero-assembly-desktop", w: 1280, h: 720 } });
+    expect(jobs[1].frames).toMatchObject({ variant: "mobile", w: 540, h: 960 });
+    expect(planJobs("section_media", { key: "hero-idle", inbox: { desktop_url: "a.mp4" } })[0].frames).toBeUndefined();
+  });
+  it("cuts about 96 frames from 8 s", () => {
+    const a = frameArgs("in.mp4", "out", { w: 1280, h: 720 }, 8).join(" ");
+    expect(a).toContain("fps=12.0000");
+    expect(a).toContain("libwebp");
+    expect(a).toContain("out/f%03d.webp");
+  });
+});

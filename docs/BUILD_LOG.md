@@ -79,3 +79,10 @@
 - Supabase auth: site_url + redirect allow-list set to the Vercel addresses (project-scoped preview wildcard only).
 - Fixed: missing created_at on services/faqs/before_after/section_media (admin list error); tests moved out of api/ (were deployed as functions); api/tsconfig.json for Vercel's function type-check; Node pinned to 22.x.
 - Emergency setup page diagnostics show deployment + setting names (never values); used to find a GITHUB_TOKEN missing from Preview.
+
+### Hero change: video-driven (no 3D model)
+- Hero = canvas WebP frame sequence (section_media "hero-assembly": ~96 frames @12 fps, desktop 1280x720 / mobile 540x960, cut by the sync job; poster = end frame) scrubbed by cursor proximity + movement (damped), touch plays forward on load then scrubs with scroll; crossfade to "hero-idle" loop at the last frame (hysteresis back). Featured films orbit as CSS 3D cards (posters; click = player). Scroll-out scrubs backwards and flies cards forward. Frames load progressively after first paint (ends first, then every 8th/4th/2nd/all), loop pauses off-screen.
+- Placeholder until uploaded: 2D-canvas dot figure with the same behaviour. No code particles over the real video (skipped: depth gain not worth the main-thread cost on phones).
+- three.js removed from the hero (HeroAssembly, stand-in model, prepare-model script deleted); still lazy-loaded only for the footer logo and premium transitions on capable GPUs.
+- Fixed: html + body both painted backgrounds, hiding negative-z section backgrounds; Ignition overflow briefly widened the mobile layout viewport (CLS 0.26 -> 0.045).
+- New column section_media.frames (migration 20261123000006) + rows hero-assembly, hero-idle.

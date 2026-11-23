@@ -82,7 +82,7 @@ export function Ignition({ onDone, replay = false }: { onDone: () => void; repla
   const skip = () => { const tl = tlRef.current; if (tl && tl.progress() < 0.8) tl.timeScale(8); };
 
   return (
-    <div ref={root} className="fixed inset-0 z-[500] grid cursor-pointer place-items-center bg-void" onClick={skip} role="presentation" aria-hidden>
+    <div ref={root} className="fixed inset-0 z-[500] grid cursor-pointer place-items-center overflow-hidden bg-void" onClick={skip} role="presentation" aria-hidden>
       <div data-stage className="relative flex w-[min(320px,64vw)] flex-col items-center">
         <span data-shock className="pointer-events-none absolute left-1/2 top-[calc(min(320px,64vw)/2)] h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-violet opacity-0 shadow-[0_0_40px_#7C3AED]" />
         <XperienceLogo ref={mark} variant="mark" className="w-full" />
