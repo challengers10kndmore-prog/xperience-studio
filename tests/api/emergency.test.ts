@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import * as OTPAuth from "otpauth";
-import { signSession, verifySession, checkPassword, checkTotp, recordFailure, lockState, _resetAttempts, LOCK_MS } from "./_lib/emergency";
+import { signSession, verifySession, checkPassword, checkTotp, recordFailure, lockState, _resetAttempts, LOCK_MS } from "../../api/_lib/emergency";
 
 const SECRET = "test-secret-0123456789";
 
@@ -42,7 +42,7 @@ describe("lockout", () => {
   });
 });
 
-import { checkSetupCode, finishSetup, newTotp, setupState } from "./_lib/emergencySetup";
+import { checkSetupCode, finishSetup, newTotp, setupState } from "../../api/_lib/emergencySetup";
 
 describe("emergency setup page", () => {
   afterEach(() => { for (const k of ["EMERGENCY_SETUP_CODE", "EMERGENCY_PASSWORD_HASH", "EMERGENCY_TOTP_SECRET", "EMERGENCY_SESSION_SECRET"]) delete process.env[k]; });

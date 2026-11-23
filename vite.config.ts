@@ -15,7 +15,7 @@ export default defineConfig({
     globals: true,
     environment: "jsdom",
     setupFiles: ["./src/test/setup.ts"],
-    include: ["src/**/*.test.{ts,tsx}", "api/**/*.test.ts", "shared/**/*.test.ts", "media-repo-template/**/*.test.ts"],
+    include: ["src/**/*.test.{ts,tsx}", "tests/**/*.test.ts", "shared/**/*.test.ts", "media-repo-template/**/*.test.ts"],
     css: false,
   },
 });

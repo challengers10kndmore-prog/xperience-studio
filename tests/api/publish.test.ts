@@ -1,4 +1,4 @@
-import { verifyAdmin } from "./_lib/supabase";
+import { verifyAdmin } from "../../api/_lib/supabase";
 
 const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: s });
 
