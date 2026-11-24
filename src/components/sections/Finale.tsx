@@ -60,7 +60,7 @@ export function FinaleCta({ openForm = false }: { openForm?: boolean }) {
   const wa = settings.whatsapp?.replace(/\D/g, "");
   const email = settings.contact_email;
   return (
-    <section ref={root} id="contact" aria-labelledby="contact-title" className="section relative flex min-h-dvh flex-col justify-center py-32">
+    <section ref={root} id="contact" aria-labelledby="contact-title" className="section relative flex min-h-svh flex-col justify-center py-32">
       <SectionMedia sectionKey="finale" align="center" />
       <div className="content mx-auto w-full max-w-6xl text-center">
         <h2 id="contact-title" className="font-display text-[clamp(2.8rem,8vw,8rem)] font-semibold leading-[0.92]">

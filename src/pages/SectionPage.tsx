@@ -38,7 +38,7 @@ function PageHero({ eyebrow, title, intro, media, index }: { eyebrow: string; ti
     return () => split.revert();
   }, { scope: ref, dependencies: [title], revertOnUpdate: true });
   return (
-    <section ref={ref} className="section relative flex min-h-[72dvh] items-end overflow-hidden pb-14 pt-[calc(var(--nav-h)+3rem)]">
+    <section ref={ref} className="section relative flex min-h-[72svh] items-end overflow-hidden pb-14 pt-[calc(var(--nav-h)+3rem)]">
       <SectionMedia sectionKey={media} />
       <div className="content grid w-full items-end gap-10 md:grid-cols-[1.5fr_1fr]">
         <div>

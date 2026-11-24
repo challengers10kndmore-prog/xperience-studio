@@ -29,7 +29,7 @@ export function Footer() {
   const wa = settings.whatsapp?.replace(/\D/g, "");
   return (
     <footer className="relative overflow-hidden border-t border-line" aria-label="Footer">
-      <div ref={stage} className="relative h-[70vh] min-h-[420px] w-full cursor-pointer" data-cursor="play"
+      <div ref={stage} className="relative h-[70svh] min-h-[420px] w-full cursor-pointer" data-cursor="play"
         onPointerMove={(e) => { const r = e.currentTarget.getBoundingClientRect(); pointer.current = { x: ((e.clientX - r.left) / r.width) * 2 - 1, y: ((e.clientY - r.top) / r.height) * 2 - 1 }; }}
         onPointerLeave={() => { pointer.current = { x: 0, y: 0 }; }}
         onClick={replayIgnition} role="button" tabIndex={0} aria-label="Replay the Xperience intro"
@@ -57,8 +57,8 @@ export function Footer() {
           <Link to="/work/editing" className="text-ash hover:text-chrome">Video Editing</Link>
         </nav>
         <div className="space-y-2 text-sm md:text-right">
-          {settings.contact_email && <p><a className="hover:text-magenta" href={`mailto:${settings.contact_email}`}>{settings.contact_email}</a></p>}
-          {wa && <p><a className="hover:text-magenta" href={`https://wa.me/${wa}`} target="_blank" rel="noreferrer">WhatsApp</a></p>}
+          {settings.contact_email && <p><a className="inline-flex min-h-11 items-center hover:text-magenta" href={`mailto:${settings.contact_email}`}>{settings.contact_email}</a></p>}
+          {wa && <p><a className="inline-flex min-h-11 items-center hover:text-magenta" href={`https://wa.me/${wa}`} target="_blank" rel="noreferrer">WhatsApp</a></p>}
           <p className="text-ash">© {new Date().getFullYear()} Xperience. All rights reserved.</p>
         </div>
       </div>

@@ -14,7 +14,8 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:e2e": "playwright test --trace off",
-    "check": "npm run typecheck && npm run lint && npm run test && npm run build"
+    "check": "npm run typecheck && npm run lint && npm run test && npm run build",
+    "test:responsive": "playwright test -c playwright.responsive.config.ts --trace off"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

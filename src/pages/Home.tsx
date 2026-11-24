@@ -12,8 +12,8 @@ export default function Home() {
       <Hero />
       {/* stable wrapper: React inserts the lazy sections here, never next to a GSAP pin-spacer */}
       <div>
-        <Suspense fallback={<div className="min-h-dvh" />}>
-          {isLoading ? <div className="min-h-dvh" /> : <BelowFold />}
+        <Suspense fallback={<div className="min-h-svh" />}>
+          {isLoading ? <div className="min-h-svh" /> : <BelowFold />}
         </Suspense>
       </div>
     </>

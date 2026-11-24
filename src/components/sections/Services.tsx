@@ -7,6 +7,7 @@ import { reducedMotion } from "@/motion/useReducedMotion";
 import { LazyVideo } from "@/components/media/LazyVideo";
 import { scrollToTarget } from "@/motion/SmoothScroll";
 import { SectionHeader } from "./SectionHeader";
+import { useTouchActive } from "@/hooks/useInView";
 
 /** Four offers dealt from a 3D deck (fan-in on scroll); hovering a card plays its 3 s loop. */
 export function Services() {
@@ -16,6 +17,11 @@ export function Services() {
     const cards = gsap.utils.toArray<HTMLElement>("[data-service]", root.current!);
     if (reducedMotion()) return;
     const mid = (cards.length - 1) / 2;
+    if (window.matchMedia("(max-width: 767px)").matches) {
+      // phones: deal the cards up from below in 3D (nothing ever leaves the screen sideways)
+      cards.forEach((c) => gsap.from(c, { y: 90, rotateX: 28, opacity: 0, transformPerspective: 900, transformOrigin: "50% 100%", duration: 1.2, ease: "expo", scrollTrigger: { trigger: c, start: "top 92%" } }));
+      return;
+    }
     gsap.from(cards, {
       rotateY: (i) => (i - mid) * -18, rotateZ: (i) => (i - mid) * 6, xPercent: (i) => (mid - i) * 95, y: 120, z: -300,
       opacity: 0, transformPerspective: 1400, transformOrigin: "50% 120%", stagger: 0.06, duration: 1.6, ease: "expo",
@@ -33,10 +39,13 @@ export function Services() {
 }
 
 function Card({ s, i, loop }: { s: Service; i: number; loop: string | null }) {
-  const [hover, setHover] = useState(false);
+  const ref = useRef<HTMLLIElement>(null);
+  const [hoverState, setHover] = useState(false);
+  const touchOn = useTouchActive(ref);
+  const hover = hoverState || touchOn;
   const todo = (v?: string | null) => !v || /^todo$/i.test(v.trim());
   return (
-    <li data-service className="group relative flex min-h-[520px] flex-col overflow-hidden rounded-3xl border border-line bg-carbon will-change-transform"
+    <li ref={ref} data-service className="group relative flex min-h-[520px] flex-col overflow-hidden rounded-3xl border border-line bg-carbon will-change-transform"
       onPointerEnter={() => setHover(true)} onPointerLeave={() => setHover(false)}>
       <div className="relative aspect-[4/5] max-h-[260px] w-full overflow-hidden">
         {loop ? <LazyVideo src={loop} play={hover} autoPlayInView={false} className="h-full w-full object-cover opacity-80 transition duration-700 group-hover:scale-105 group-hover:opacity-100" />

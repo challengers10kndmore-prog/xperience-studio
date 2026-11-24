@@ -101,7 +101,7 @@ export function WorkCarousel({ heading = true }: { heading?: boolean }) {
   const cur = films[front];
   return (
     <section ref={stage} id="library" aria-roledescription="carousel" aria-label={copy.headline}
-      className="relative w-full overflow-hidden bg-void py-[clamp(2rem,5vh,3.5rem)]">
+      className="relative w-full overflow-hidden bg-void py-[clamp(2rem,5svh,3.5rem)]">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_50%_at_50%_55%,rgba(124,58,237,.18),transparent_70%)]" />
       {heading && (
         <div className="section relative z-10 flex flex-wrap items-end justify-between gap-4">
@@ -119,7 +119,7 @@ export function WorkCarousel({ heading = true }: { heading?: boolean }) {
       )}
 
       {/* the 3D stage: ~68% of the screen */}
-      <div className="relative mx-auto mt-2 h-[clamp(380px,62vh,760px)] select-none [perspective:1600px] [perspective-origin:50%_50%]"
+      <div data-offscreen-ok className="relative mx-auto mt-2 h-[clamp(380px,62svh,760px)] select-none [perspective:1600px] [perspective-origin:50%_50%]"
         onPointerDown={(e) => { drag.current = { x: e.clientX, a: angle.current, moved: false }; target.current = null; vel.current = 0; (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId); }}
         onPointerMove={(e) => {
           const d = drag.current; if (!d) return;

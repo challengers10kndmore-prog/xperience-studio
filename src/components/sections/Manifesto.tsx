@@ -45,7 +45,7 @@ export function Manifesto() {
   return (
     // stable wrapper: ScrollTrigger's pin-spacer wraps the section, React keeps owning this div
     <div>
-    <section ref={root} id="manifesto" aria-label="Manifesto" className="relative h-dvh overflow-hidden">
+    <section ref={root} data-offscreen-ok id="manifesto" aria-label="Manifesto" className="relative h-svh overflow-hidden">
       <SectionMedia sectionKey="manifesto" align="center" />
       <div data-mask className="absolute inset-0 z-10 grid place-items-center bg-void mix-blend-multiply">
         <p key={last} data-mask-text data-fade className="px-6 text-center font-display text-[clamp(3rem,11vw,11rem)] font-bold leading-[0.9] text-white will-change-transform" style={{ transformOrigin: "50% 55%" }}>

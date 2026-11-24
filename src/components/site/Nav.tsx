@@ -30,12 +30,12 @@ export function Nav({ markHidden = false }: { markHidden?: boolean }) {
   return (
     <>
       <header ref={ref} className={`fixed inset-x-0 top-0 z-[80] transition-colors duration-500 ${solid ? "bg-void/70 backdrop-blur-xl" : "bg-gradient-to-b from-void/80 to-transparent"}`}>
-        <div className="flex h-[var(--nav-h)] items-center justify-between gap-6 px-[clamp(1.25rem,4vw,4rem)]">
+        <div className="flex h-[var(--nav-h)] items-center justify-between gap-6 px-[var(--gutter)]">
           <Link to="/" aria-label="Xperience home" className="flex items-center gap-3" onClick={link("/")}>
             <span data-nav-mark-wrap style={{ opacity: markHidden ? 0 : 1 }}><span className="block h-10 w-10"><NavMark className="h-10 w-10" ref={(el) => el?.setAttribute("data-nav-mark", "")} /></span></span>
             <span className="font-label text-[0.68rem] tracking-[0.32em]">XPERIENCE</span>
           </Link>
-          <nav aria-label="Primary" className="hidden items-center gap-1 lg:flex">
+          <nav aria-label="Primary" className="hidden items-center gap-1 xl:flex">
             {PAGES.filter((p) => p.header).map((p) => {
               const active = pathname === p.path || (p.path === "/work" && pathname.startsWith("/work"));
               return (
@@ -83,10 +83,10 @@ function Menu({ onClose, go }: { onClose: () => void; go: (to: string) => void }
   return (
     <div ref={root} id="site-menu" role="dialog" aria-modal="true" aria-label="Menu" className="fixed inset-0 z-[300] overflow-y-auto bg-void">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_60%_at_80%_20%,rgba(124,58,237,.25),transparent_70%),radial-gradient(50%_50%_at_10%_90%,rgba(47,107,255,.15),transparent_70%)]" />
-      <div className="relative flex h-[var(--nav-h)] items-center justify-end px-[clamp(1.25rem,4vw,4rem)]">
+      <div className="relative flex h-[var(--nav-h)] items-center justify-end px-[var(--gutter)]">
         <button type="button" onClick={onClose} className="flex h-10 items-center gap-2 rounded-full border border-line px-4 font-label text-[0.58rem] tracking-[0.22em] hover:border-violet"><X className="size-4" /> CLOSE</button>
       </div>
-      <div className="relative grid gap-10 px-[clamp(1.25rem,4vw,4rem)] pb-12 pt-4 lg:grid-cols-[1.4fr_1fr]">
+      <div className="relative grid gap-10 px-[var(--gutter)] pb-12 pt-4 lg:grid-cols-[1.4fr_1fr]">
         <nav aria-label="All pages">
           <ol className="grid gap-x-10 sm:grid-cols-2">
             {[{ path: "/", label: "Home" }, ...PAGES].map((p, i) => (

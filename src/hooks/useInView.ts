@@ -29,3 +29,21 @@ export function useMediaQuery(q: string) {
   }, [q]);
   return m;
 }
+
+/** Phones in either orientation: narrow, or short landscape. Pinned sideways sections use their phone layout here. */
+export const COMPACT_QUERY = "(max-width: 767px), (max-height: 520px)";
+export const useCompact = () => useMediaQuery(COMPACT_QUERY);
+
+/** Touch stand-in for hover: true while the element is mostly on screen, on devices without hover. */
+export function useTouchActive(ref: RefObject<Element | null>) {
+  const touch = useMediaQuery("(hover: none)");
+  const [on, setOn] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!touch || !el || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(([e]) => setOn(e.intersectionRatio >= 0.7), { threshold: [0, 0.7, 1] });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [ref, touch]);
+  return touch && on;
+}

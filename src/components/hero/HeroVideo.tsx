@@ -179,7 +179,7 @@ export function HeroVideo() {
   }, [set, idleSrc, portrait, coarse]);
 
   return (
-    <section ref={root} id="top" className="section relative flex min-h-dvh flex-col justify-end overflow-hidden pb-[12vh] pt-[var(--nav-h)]">
+    <section ref={root} id="top" className="section relative flex min-h-svh flex-col justify-end overflow-hidden pb-[12svh] pt-[var(--nav-h)]">
       <div aria-hidden className="absolute inset-0 -z-10 bg-void">
         {!set && <div className="media-placeholder absolute inset-0 opacity-70" />}
         <VideoWall films={films} cx={portrait ? 0.5 : 0.64} scroll={scrollRef} />
@@ -197,7 +197,7 @@ export function HeroVideo() {
       <div ref={shardsRef} hidden />
       <HeroCopy />
       <HeroTicker />
-      <div aria-hidden className="pointer-events-none absolute bottom-16 right-[clamp(1.25rem,4vw,4rem)] z-10 hidden flex-col items-end gap-2 md:flex">
+      <div aria-hidden className="pointer-events-none absolute bottom-16 right-[var(--gutter)] z-10 hidden flex-col items-end gap-2 md:flex">
         <span className="eyebrow !text-[0.55rem]">Move closer to assemble · scroll</span>
         <span className="relative h-10 w-px overflow-hidden bg-chrome/20"><span className="absolute inset-x-0 top-0 h-1/2 animate-[scrollcue_1.8s_ease-in-out_infinite] bg-magenta" /></span>
       </div>

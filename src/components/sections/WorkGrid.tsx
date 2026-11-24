@@ -5,6 +5,7 @@ import type { SiteProject } from "@/data/placeholders";
 import { ProjectMedia, Tags } from "@/components/media/ProjectMedia";
 import { usePlayer } from "@/components/media/Player";
 import { formatDuration } from "@/lib/utils";
+import { useTouchActive } from "@/hooks/useInView";
 
 type Filter = { discipline: "all" | "ai" | "editing"; category: string | null; format: string | null; originals: boolean };
 
@@ -68,7 +69,9 @@ const RATIO: Record<string, string> = { "16:9": "16/9", "9:16": "9/16", "1:1": "
 
 function Card({ p }: { p: SiteProject }) {
   const ref = useRef<HTMLButtonElement>(null);
-  const [hover, setHover] = useState(false);
+  const [hoverState, setHover] = useState(false);
+  const touchOn = useTouchActive(ref);
+  const hover = hoverState || touchOn;
   const open = usePlayer();
   const tilt = (e: React.PointerEvent) => {
     if (!hasFinePointer() || reducedMotion() || !ref.current) return;

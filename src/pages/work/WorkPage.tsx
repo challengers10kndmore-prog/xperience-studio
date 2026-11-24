@@ -45,7 +45,7 @@ export default function WorkPage() {
   if (!meta) return <Navigate to="/" replace />;
   return (
     <>
-      <section ref={head} className="section relative flex min-h-[78dvh] flex-col justify-end overflow-hidden pb-16 pt-[calc(var(--nav-h)+4rem)]">
+      <section ref={head} className="section relative flex min-h-[78svh] flex-col justify-end overflow-hidden pb-16 pt-[calc(var(--nav-h)+4rem)]">
         <div data-media className="absolute inset-0 -z-10"><SectionMedia sectionKey={meta.key} /></div>
         <div className="content">
           <button type="button" data-fade onClick={() => go("/")} className="eyebrow mb-10 inline-flex items-center gap-2 hover:text-chrome"><ArrowLeft className="size-4" /> Back to the reel</button>

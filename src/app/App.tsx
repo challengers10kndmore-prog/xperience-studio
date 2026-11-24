@@ -21,7 +21,7 @@ export function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <Suspense fallback={<div className="min-h-dvh bg-void" />}>
+        <Suspense fallback={<div className="min-h-svh bg-void" />}>
           <Routes>
             {BrandPreview && <Route path="/__brand" element={<BrandPreview />} />}
             <Route path="/admin/login" element={<AdminLogin />} />

@@ -27,7 +27,7 @@ export function Ignition({ onDone, replay = false }: { onDone: () => void; repla
     lenis?.stop();
     const repeat = !replay && repeatVisit;
 
-    const finish = () => { lenis?.start(); document.documentElement.classList.remove("is-loading"); onDone(); };
+    const finish = () => { lenis?.start(); document.documentElement.classList.remove("is-loading"); window.dispatchEvent(new Event("xp:ignited")); onDone(); };
 
     if (reducedMotion()) {
       tlRef.current = gsap.timeline({ onComplete: finish }).from(root.current!.querySelector("[data-stage]"), { opacity: 0, duration: 0.4 }).to(root.current, { opacity: 0, duration: 0.4, delay: 0.3 });

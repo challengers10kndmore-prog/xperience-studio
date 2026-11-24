@@ -19,10 +19,14 @@ export function HeroCopy() {
     split.words.forEach((w) => { if ((w as HTMLElement).querySelector("[data-hl]") || (w as HTMLElement).closest("[data-hl]")) (w as HTMLElement).classList.add("text-gradient"); });
     // Only transforms here (no opacity): the copy counts as painted immediately, which keeps LCP fast
     // even while the Ignition intro plays over it.
-    gsap.timeline({ delay: document.documentElement.classList.contains("is-loading") ? 2.9 : 0.2 })
+    // start the moment the intro finishes (0.8 s on repeat visits), not after a fixed wait
+    const tl = gsap.timeline({ paused: true })
       .from(split.words, { yPercent: 115, stagger: 0.05, duration: 1.4, ease: "expo" })
       .from(ref.current!.querySelectorAll("[data-fade]"), { y: 18, stagger: 0.08, duration: 1 }, 0.35);
-    return () => split.revert();
+    const start = () => tl.play();
+    if (document.documentElement.classList.contains("is-loading")) window.addEventListener("xp:ignited", start, { once: true });
+    else gsap.delayedCall(0.15, start);
+    return () => { window.removeEventListener("xp:ignited", start); split.revert(); };
   }, { scope: ref, dependencies: [settings.hero_headline], revertOnUpdate: true });
   return (
     <div ref={ref} className="content max-w-5xl space-y-7">
@@ -50,7 +54,7 @@ export function HeroCopy() {
 /** Fallback hero (no WebGL / low GPU tier / reduced motion): section loop + copy. */
 export function HeroStatic() {
   return (
-    <section id="top" className="section relative flex min-h-dvh flex-col justify-end pb-[12vh] pt-[var(--nav-h)]">
+    <section id="top" className="section relative flex min-h-svh flex-col justify-end pb-[12svh] pt-[var(--nav-h)]">
       <SectionMedia sectionKey="hero" />
       <HeroCopy />
     </section>
