@@ -96,7 +96,7 @@ export function SettingsPage() {
       <Card>
         <CardHeader><CardTitle>Section copy</CardTitle><CardDescription>Headlines and short lines for each section.</CardDescription></CardHeader>
         <CardContent className="grid gap-4 md:grid-cols-2">
-          <div className="md:col-span-2"><Field label="Manifesto"><Textarea value={copy.manifesto.text} onChange={(e) => setCopy("manifesto", "text", e.target.value)} /></Field></div>
+          <div className="md:col-span-2"><Field label="Manifesto (six lines, one per row: the animation follows them line by line)"><Textarea rows={6} value={copy.manifesto.text} onChange={(e) => setCopy("manifesto", "text", e.target.value)} /></Field></div>
           {([["premium", "Premium samples"], ["crafts", "Two crafts"], ["beforeAfter", "Before / After"], ["library", "Work library"], ["process", "Process"], ["toolkit", "Toolkit"], ["proof", "Proof"], ["services", "Services"], ["faq", "FAQ"], ["finale", "Finale"]] as const).map(([k, label]) => (
             <Field key={k} label={`${label}: headline`}><Input value={(copy[k] as { headline: string }).headline} onChange={(e) => setCopy(k, "headline", e.target.value)} /></Field>
           ))}
