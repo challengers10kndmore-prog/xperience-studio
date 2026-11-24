@@ -12,12 +12,12 @@ Live: https://xperience-studio.vercel.app · Preview (build branch): https://xpe
    - **Hero: assembly:** 8 s, you assembling from particles; desktop 16:9 + mobile 9:16. The last frame must match the idle loop's first frame. The sync job cuts it into ~96 frames; the poster (end frame) is made automatically.
    - **Hero: idle loop:** 8 s seamless loop, same framing; desktop 16:9 + mobile 9:16.
    - Camera locked, left third dark and empty, no audio.
-   - **New: Hero film (replaces the assembly hero as soon as both are uploaded):**
-     - **Hero film: intro:** plays once per visit. Desktop 16:9 + mobile 9:16. Its last frame must match the loop's first frame.
-     - **Hero film: loop:** seamless loop, desktop 16:9 (mobile optional: without it, phones use the idle loop).
-     - Keep the middle of the frame (27% to 73% across, 20% to 62% down) free of your face: the work cards float there. You stand in the lower part.
-     - **Cue sheet:** admin > Site settings > "Hero film cue sheet". Paste the file Claude gives you (times for the headline move and each card). Empty = automatic timings.
-     - To check the layout zones on the live site, add `?zones=1` to the address.
+   - **Hero film (ready to upload; it replaces the assembly hero once the intro and loop are both in):**
+     - **Hero film: intro** > Desktop: `hero-intro` (16:9, 15.83 s). Mobile: `hero-intro-phone-9x16`.
+     - **Hero film: loop** > Desktop: `hero-loop` (16:9, 37.08 s). Mobile: leave empty.
+     - **Hero: idle loop** > Mobile: `hero-idle-loop-phone-9x16` (6.92 s). This replaces the old phone file. Leave Desktop as it is.
+     - Upload all four files in one go, so the old hero never plays with the new phone loop.
+     - The cue sheet is already loaded (admin > Site settings > "Hero film cue sheet"). To see the zones on the live site, add `?zones=1` to the address.
 6. **Section background loops:** hero, manifesto, finale first; then the rest (prompts below).
 7. **Stats and tools:** real numbers (projects delivered, views generated, typical turnaround, repeat clients), switch off "placeholder" on each; confirm the tool chips.
 8. **Services and FAQs:** turnaround + "from" price per service; days per project and revision rounds in the FAQs; confirm "You own the final video".

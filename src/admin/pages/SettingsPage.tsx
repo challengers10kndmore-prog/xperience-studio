@@ -134,8 +134,11 @@ export function SettingsPage() {
 }
 
 const CUES_EXAMPLE = JSON.stringify({
-  zones: { gallery: { left: 27, right: 73, top: 20, bottom: 62 }, galleryMobile: { left: 6, right: 94, top: 13, bottom: 42 }, dock: { left: 4, top: 11 }, nav: 10, lane: 25, floor: 36 },
-  headlineDockAt: 15.5, cards: [{ at: 16.2, slot: 1 }, { at: 19, slot: 2 }], loopCards: [{ at: 2, slot: 1 }],
+  durations: { intro: 15.833, loop: 37.083 },
+  zones: { gallery: { x: 0.27, y: 0.2, w: 0.46, h: 0.42 }, headline: { x: 0.03, y: 0.11, w: 0.37, h: 0.07 } },
+  intro: { headline: [{ at: 4.4, state: "large-left" }, { at: 8.2, state: "fade-out" }, { at: 15.3, state: "docked" }], flashes: [{ at: 1.05, type: "impact" }] },
+  loop: { headline: [{ at: 0, state: "docked" }], cuts: [{ at: 6.667, type: "sparkle" }], intrusions: [{ from: 14.9, to: 17.2, side: "right", shift: -0.06, scale: 0.96 }], cards: [{ at: 0.8, slot: 1 }] },
+  mobile: { gallery: { x: 0.06, y: 0.14, w: 0.88, h: 0.3 }, headline: [{ at: 4.4, state: "top" }, { at: 15.3, state: "docked-top" }], cards: { every: 3, start: 0.8 } },
 }, null, 2);
 
 /** The hero film's cue sheet: when the headline docks and when each featured film appears. */
@@ -149,7 +152,7 @@ function HeroCuesCard({ value, onSave }: { value: unknown; onSave: (v: SiteSetti
     <Card>
       <CardHeader>
         <CardTitle>Hero film cue sheet</CardTitle>
-        <CardDescription>Times (in seconds) for the hero film: when the headline moves to the top-left and when each featured film card appears. "slot" is the film's position in your Featured list. Paste the file Claude gives you. Leave empty for automatic timings. Add ?zones=1 to the site address to see the zones.</CardDescription>
+        <CardDescription>Times (in seconds) for the hero film: headline states, cuts, when each featured film card appears (slots 1 to 3; each cue brings in the next featured film) and when the cards slide aside. Loaded from docs/hero-film/hero-cues.json. Paste the file Claude gives you. Leave empty for automatic timings. Add ?zones=1 to the site address to see the zones.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
         <Textarea rows={12} className="font-mono text-xs" placeholder={CUES_EXAMPLE} value={text} onChange={(e) => setText(e.target.value)} aria-label="Hero film cue sheet (JSON)" />
