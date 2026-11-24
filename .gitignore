@@ -10,3 +10,6 @@ dist/
 # os / editor
 .DS_Store
 *.log
+# test output (screenshots worth keeping live in docs/)
+test-results/
+playwright-report/
