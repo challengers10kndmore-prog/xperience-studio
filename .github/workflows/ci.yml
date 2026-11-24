@@ -12,6 +12,8 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm }
       - run: npm ci --no-audit --no-fund
+      # the media pipeline tests (posters/cover cards) need the media repo's own packages (satori, resvg)
+      - run: npm ci --prefix media-repo-template --no-audit --no-fund
       - run: npm run check
   responsive:
     # Every page at 360 / 390 / 414 / 768 / 1024 (portrait + landscape), 1280, 1440, 1920:
@@ -24,6 +26,8 @@ jobs:
         with: { node-version: 22, cache: npm }
       - run: npm ci --no-audit --no-fund
       - run: npx playwright install --with-deps chromium
+      - run: npx playwright test --trace off
+        env: { CI: "1" }
       - run: npm run test:responsive
         env: { CI: "1" }
       - if: always()
