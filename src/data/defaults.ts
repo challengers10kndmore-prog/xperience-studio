@@ -21,6 +21,7 @@ export const defaultSettings: SiteSettings = {
   maintenance_message: "We're polishing a few frames. Back very soon.",
   updated_at: now,
   layout: {},
+  hero_cues: {},
   stats: [
     { key: "projects", label: "Projects delivered", value: 0, suffix: "+", todo: true },
     { key: "views", label: "Views generated", value: 0, suffix: "M+", todo: true },
@@ -65,7 +66,7 @@ const sm = (key: string, label: string): SectionMedia => ({
 });
 
 export const SECTION_KEYS = [
-  "hero", "hero-assembly", "hero-idle", "manifesto", "premium-intro", "crafts-ai", "crafts-editing", "library", "process", "toolkit", "proof",
+  "hero", "hero-assembly", "hero-idle", "hero-intro", "hero-loop", "manifesto", "premium-intro", "crafts-ai", "crafts-editing", "library", "process", "toolkit", "proof",
   "service-ai-ad", "service-music", "service-social", "service-longform", "finale",
 ] as const;
 export type SectionKey = (typeof SECTION_KEYS)[number];

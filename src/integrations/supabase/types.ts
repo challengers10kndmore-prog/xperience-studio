@@ -470,6 +470,7 @@ export type Database = {
           credit_line: string | null
           hero_cta_primary: string | null
           hero_cta_secondary: string | null
+          hero_cues: Json
           hero_headline: string | null
           hero_sub: string | null
           id: number
@@ -491,6 +492,7 @@ export type Database = {
           credit_line?: string | null
           hero_cta_primary?: string | null
           hero_cta_secondary?: string | null
+          hero_cues?: Json
           hero_headline?: string | null
           hero_sub?: string | null
           id?: number
@@ -512,6 +514,7 @@ export type Database = {
           credit_line?: string | null
           hero_cta_primary?: string | null
           hero_cta_secondary?: string | null
+          hero_cues?: Json
           hero_headline?: string | null
           hero_sub?: string | null
           id?: number
