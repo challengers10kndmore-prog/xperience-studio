@@ -39,7 +39,7 @@ function Clip({ s, i, n }: { s: Step; i: number; n: number }) {
         </div>
         <p className="font-label text-[0.65rem] tracking-[0.3em]" style={{ color: COLORS[i % COLORS.length] }}>PASS {String(i + 1).padStart(2, "0")}</p>
         <h3 className="font-display text-[clamp(1.7rem,1.2rem+1.6vw,2.4rem)] font-semibold">{s.title}</h3>
-        <p className="max-w-sm text-chrome/80">{s.text}</p>
+        <p data-words className="max-w-sm text-chrome/80">{s.text}</p>
       </div>
     </>
   );

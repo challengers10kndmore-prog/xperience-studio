@@ -11,6 +11,8 @@ import { formatDuration } from "@/lib/utils";
 import { displayTitle } from "@/lib/titles";
 import { isLite } from "@/lib/perf";
 import { reducedMotion } from "@/motion/useReducedMotion";
+import { KineticHeading } from "@/components/kinetic/KineticHeading";
+import { RollText } from "@/components/kinetic/RollText";
 
 const pretty = (s: string) => s.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 type Filter = { discipline: "all" | "ai" | "editing"; originals: boolean };
@@ -107,7 +109,7 @@ export function WorkCarousel({ heading = true }: { heading?: boolean }) {
         <div className="section relative z-10 flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="eyebrow mb-3 flex items-center gap-3"><MarkEmblem className="h-5 w-5" /><span className="timecode text-magenta">WORK</span>{copy.sub}</p>
-            <h2 className="section-title !text-[clamp(2.2rem,5vw,4.6rem)]">{copy.headline}</h2>
+            <KineticHeading className="section-title !text-[clamp(2.1rem,1rem+4vw,4.6rem)]">{copy.headline}</KineticHeading>
           </div>
           <div className="flex flex-wrap gap-2" role="group" aria-label="Filter work">
             {(["all", "ai", "editing"] as const).map((d) => (
@@ -148,7 +150,7 @@ export function WorkCarousel({ heading = true }: { heading?: boolean }) {
             {(cur.caption || cur.brief) && <p className="text-chrome/75">{cur.caption || cur.brief}</p>}
             <div className="flex flex-wrap items-center gap-4 pt-1">
               <button type="button" className="btn btn-primary !py-3" data-cursor="play" aria-label={`Play ${cur.title} with sound`} onClick={(e) => open(cur, e.currentTarget)}>
-                <Volume2 className="size-4" /> Watch with sound
+                <Volume2 className="size-4" /> <RollText>Watch with sound</RollText>
               </button>
               <span className="timecode text-sm text-ash">{String(front + 1).padStart(2, "0")} / {String(n).padStart(2, "0")} · {formatDuration(cur.duration_s)}{cur.category ? ` · ${pretty(cur.category)}` : ""}</span>
             </div>

@@ -7,6 +7,7 @@ import { gsap } from "@/motion/gsap";
 import { reducedMotion } from "@/motion/useReducedMotion";
 import { formatDuration } from "@/lib/utils";
 import { displayTitle } from "@/lib/titles";
+import { RollText } from "@/components/kinetic/RollText";
 
 /**
  * Premium on phones: a vertical, swipeable reel. Each film fills the screen and snaps; the active one plays and its
@@ -45,7 +46,7 @@ export function PremiumMobile({ films }: { films: SiteProject[] }) {
               {(p.brief || p.caption) && <p className="text-chrome/80">{p.brief || p.caption}</p>}
               <Tags p={p} />
               <div className="flex items-center gap-4 pt-1">
-                <button type="button" className="btn btn-primary" onClick={(e) => open(p, e.currentTarget)} aria-label={`Play ${p.title}`}>Watch</button>
+                <button type="button" className="btn btn-primary" onClick={(e) => open(p, e.currentTarget)} aria-label={`Play ${p.title}`}><RollText>Watch</RollText></button>
                 <span className="timecode text-sm text-ash">{formatDuration(p.duration_s)}</span>
               </div>
             </div>

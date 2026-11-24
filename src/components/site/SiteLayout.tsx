@@ -13,6 +13,7 @@ import { ScrollTrigger } from "@/motion/gsap";
 import { WebGLProvider, useWebGL } from "@/three/webgl";
 import { trackPageView } from "@/lib/analytics";
 import { useDocumentMeta } from "@/hooks/useDocumentMeta";
+import { KineticScan } from "@/components/kinetic/KineticScan";
 
 const SharedCanvas = lazy(() => import("@/three/SharedCanvas"));
 
@@ -44,6 +45,7 @@ export function SiteLayout() {
               <Outlet />
             </main>
             <Footer />
+            <KineticScan />
             <GL />
             <Cursor />
             <div className="grain" aria-hidden />

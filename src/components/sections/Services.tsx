@@ -7,6 +7,7 @@ import { reducedMotion } from "@/motion/useReducedMotion";
 import { LazyVideo } from "@/components/media/LazyVideo";
 import { scrollToTarget } from "@/motion/SmoothScroll";
 import { SectionHeader } from "./SectionHeader";
+import { RollText } from "@/components/kinetic/RollText";
 import { useTouchActive } from "@/hooks/useInView";
 
 /** Four offers dealt from a 3D deck (fan-in on scroll); hovering a card plays its 3 s loop. */
@@ -55,7 +56,7 @@ function Card({ s, i, loop }: { s: Service; i: number; loop: string | null }) {
       </div>
       <div className="flex flex-1 flex-col gap-4 p-6">
         <h3 className="font-display text-2xl font-semibold leading-tight">{s.title}</h3>
-        <p className="text-sm text-chrome/80">{s.description}</p>
+        <p data-words className="text-sm text-chrome/80">{s.description}</p>
         {s.included.length > 0 && (
           <ul className="space-y-1.5 text-sm text-ash">
             {s.included.map((x) => <li key={x} className="flex gap-2"><Check className="mt-0.5 size-4 shrink-0 text-violet" />{x}</li>)}
@@ -68,7 +69,7 @@ function Card({ s, i, loop }: { s: Service; i: number; loop: string | null }) {
           </div>
           {!todo(s.price_from) && <div className="text-right"><p className="eyebrow !text-[0.55rem]">From</p><p className="font-display text-xl">{s.price_from}</p></div>}
         </div>
-        <button type="button" onClick={() => scrollToTarget("#contact")} className="btn btn-ghost justify-center">Ask about this</button>
+        <button type="button" onClick={() => scrollToTarget("#contact")} className="btn btn-ghost justify-center"><RollText>Ask about this</RollText></button>
       </div>
     </li>
   );

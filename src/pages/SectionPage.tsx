@@ -4,13 +4,14 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { PAGES, pageByPath } from "@/data/pages";
 import { useSiteData } from "@/data/DataProvider";
 import { siteProjects } from "@/data/placeholders";
-import { gsap, ScrollTrigger, SplitText, useGSAP } from "@/motion/gsap";
+import { gsap, ScrollTrigger, useGSAP } from "@/motion/gsap";
 import { reducedMotion } from "@/motion/useReducedMotion";
 import { LightLine } from "@/motion/LightLine";
 import { useDocumentMeta } from "@/hooks/useDocumentMeta";
 import { SectionMedia } from "@/components/media/SectionMedia";
 import { LogoStage } from "@/components/brand/LogoStage";
 import { useXWipeNavigate } from "@/components/site/XWipe";
+import { KineticHeading } from "@/components/kinetic/KineticHeading";
 import { WorkCarousel } from "@/components/sections/WorkCarousel";
 import { WorkGrid } from "@/components/sections/WorkGrid";
 import { PremiumSamples } from "@/components/sections/PremiumSamples";
@@ -29,13 +30,9 @@ function PageHero({ eyebrow, title, intro, media, index }: { eyebrow: string; ti
   const go = useXWipeNavigate();
   useGSAP(() => {
     if (reducedMotion()) return;
-    const h = ref.current!.querySelector("h1")!;
-    const split = SplitText.create(h, { type: "chars", mask: "chars" });
     gsap.timeline({ delay: 0.15 })
-      .from(split.chars, { yPercent: 120, rotate: 6, stagger: 0.025, duration: 1.2, ease: "expo" })
       .from(ref.current!.querySelectorAll("[data-fade]"), { opacity: 0, y: 20, stagger: 0.08, duration: 0.9 }, 0.3)
       .from(ref.current!.querySelector("[data-stage]"), { opacity: 0, y: 40, scale: 0.9, duration: 1.4, ease: "expo" }, 0.2);
-    return () => split.revert();
   }, { scope: ref, dependencies: [title], revertOnUpdate: true });
   return (
     <section ref={ref} className="section relative flex min-h-[72svh] items-end overflow-hidden pb-14 pt-[calc(var(--nav-h)+3rem)]">
@@ -44,8 +41,8 @@ function PageHero({ eyebrow, title, intro, media, index }: { eyebrow: string; ti
         <div>
           <button type="button" data-fade onClick={() => go("/")} className="eyebrow mb-8 inline-flex items-center gap-2 hover:text-chrome"><ArrowLeft className="size-4" /> Home</button>
           <p data-fade className="eyebrow mb-4 flex items-center gap-3"><span className="timecode text-magenta">{String(index + 1).padStart(2, "0")}</span>{eyebrow}</p>
-          <h1 key={title} className="font-display text-[clamp(3.4rem,11vw,11rem)] font-semibold leading-[0.85]">{title}</h1>
-          <p data-fade className="mt-8 max-w-xl text-lg text-chrome/80">{intro}</p>
+          <KineticHeading key={title} as="h1" trigger="mount" delay={0.2} className="font-display text-[clamp(3.2rem,1rem+10vw,11rem)] font-semibold leading-[0.85]">{title}</KineticHeading>
+          <p data-words className="mt-8 max-w-xl text-lg text-chrome/80">{intro}</p>
         </div>
         <div data-stage className="hidden justify-center md:flex"><LogoStage size="lg" /></div>
       </div>
@@ -61,7 +58,7 @@ function NextPage({ index }: { index: number }) {
       <a href={next.path} onClick={(e) => { e.preventDefault(); go(next.path); }} className="group chrome-card flex items-center justify-between gap-6 p-8 md:p-12" data-cursor="open">
         <div>
           <p className="eyebrow mb-3">Next</p>
-          <p className="font-display text-[clamp(2.4rem,6vw,5.5rem)] font-semibold leading-none transition-colors group-hover:text-magenta">{next.title}</p>
+          <KineticHeading as="p" className="font-display text-[clamp(2.2rem,1rem+5vw,5.5rem)] font-semibold leading-none transition-colors group-hover:text-magenta">{next.title}</KineticHeading>
         </div>
         <ArrowRight className="size-10 shrink-0 transition-transform duration-500 group-hover:translate-x-2" />
       </a>
@@ -75,7 +72,7 @@ function AllWork() {
   return (
     <section className="section py-20">
       <p className="eyebrow mb-3">Browse everything</p>
-      <h2 className="section-title mb-12 !text-[clamp(2.2rem,5vw,4.4rem)]">All films</h2>
+      <KineticHeading className="section-title mb-12 !text-[clamp(2.2rem,1rem+4vw,4.4rem)]">All films</KineticHeading>
       <WorkGrid projects={projects} />
     </section>
   );
@@ -89,8 +86,8 @@ function AboutDaniel() {
         <LogoStage size="md" />
         <div className="space-y-5">
           <p className="eyebrow">The studio</p>
-          <h2 className="font-display text-[clamp(2rem,4.5vw,3.8rem)] font-semibold leading-[0.95]">Xperience is Daniel Ogbeifun Osewe's studio for AI video and editing.</h2>
-          <p className="max-w-2xl text-lg text-chrome/80">{settings.hero_sub}</p>
+          <KineticHeading className="font-display text-[clamp(1.9rem,1rem+3.6vw,3.8rem)] font-semibold leading-[0.95]">Xperience is Daniel Ogbeifun Osewe's studio for AI video and editing.</KineticHeading>
+          <p data-words className="max-w-2xl text-lg text-chrome/80">{settings.hero_sub ?? ""}</p>
           <p className="font-label text-[0.65rem] tracking-[0.3em] text-ash">{settings.tagline}</p>
         </div>
       </div>

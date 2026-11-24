@@ -7,6 +7,8 @@ import { Magnetic } from "@/motion/Magnetic";
 import { SectionMedia } from "@/components/media/SectionMedia";
 import { sendContact } from "@/lib/contact";
 import { SectionHeader } from "./SectionHeader";
+import { KineticHeading } from "@/components/kinetic/KineticHeading";
+import { RollText } from "@/components/kinetic/RollText";
 
 export function Faq() {
   const data = useSiteData();
@@ -53,23 +55,17 @@ export function FinaleCta({ openForm = false }: { openForm?: boolean }) {
   const { settings } = useSiteData();
   const root = useRef<HTMLElement>(null);
   const [showForm, setShowForm] = useState(openForm);
-  useGSAP(() => {
-    if (reducedMotion()) return;
-    gsap.from("[data-cta-line]", { yPercent: 100, opacity: 0, stagger: 0.1, duration: 1.4, ease: "expo", scrollTrigger: { trigger: root.current, start: "top 70%" } });
-  }, { scope: root });
   const wa = settings.whatsapp?.replace(/\D/g, "");
   const email = settings.contact_email;
   return (
     <section ref={root} id="contact" aria-labelledby="contact-title" className="section relative flex min-h-svh flex-col justify-center py-32">
       <SectionMedia sectionKey="finale" align="center" />
       <div className="content mx-auto w-full max-w-6xl text-center">
-        <h2 id="contact-title" className="font-display text-[clamp(2.8rem,8vw,8rem)] font-semibold leading-[0.92]">
-          {settings.copy.finale.headline.split(/(?<=[?.!])\s+/).map((l, i) => <span key={i} className="block overflow-hidden"><span data-cta-line className="block">{l}</span></span>)}
-        </h2>
+        <KineticHeading id="contact-title" className="font-display text-[clamp(2.4rem,1rem+6.6vw,8rem)] font-semibold leading-[0.92] text-balance">{settings.copy.finale.headline}</KineticHeading>
         <div className="mt-12 flex flex-wrap items-center justify-center gap-4">
           <Magnetic>
             <button type="button" onClick={() => setShowForm(true)} className="btn btn-primary !px-10 !py-6 !text-[0.8rem]" aria-expanded={showForm} aria-controls="contact-form" data-cursor="open">
-              {settings.copy.finale.cta} <ArrowUpRight className="size-5" />
+              <RollText>{settings.copy.finale.cta}</RollText> <ArrowUpRight className="size-5" />
             </button>
           </Magnetic>
           {wa && <a className="btn btn-ghost" href={`https://wa.me/${wa}`} target="_blank" rel="noreferrer"><MessageCircle className="size-4" /> WhatsApp</a>}
@@ -110,7 +106,7 @@ function ContactForm() {
       <textarea id="c-msg" name="message" required maxLength={5000} rows={5} placeholder="Your idea, deadline and any links" className={`${field} sm:col-span-2`} />
       <input name="company" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
       {state === "error" && <p role="alert" className="text-sm text-rose-300 sm:col-span-2">{err}</p>}
-      <button type="submit" disabled={state === "sending"} className="btn btn-primary justify-center sm:col-span-2">{state === "sending" ? "Sending…" : "Send"}</button>
+      <button type="submit" disabled={state === "sending"} className="btn btn-primary justify-center sm:col-span-2">{state === "sending" ? "Sending…" : <RollText>Send</RollText>}</button>
     </form>
   );
 }

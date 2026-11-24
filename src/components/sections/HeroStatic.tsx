@@ -6,6 +6,8 @@ import { gsap, SplitText, useGSAP } from "@/motion/gsap";
 import { reducedMotion } from "@/motion/useReducedMotion";
 import { scrollToTarget } from "@/motion/SmoothScroll";
 import { Magnetic } from "@/motion/Magnetic";
+import { RollText } from "@/components/kinetic/RollText";
+import { velocitySkew } from "@/components/kinetic/velocity";
 
 /** Hero copy layer (shared by the static hero and "The Assembly"). */
 export function HeroCopy() {
@@ -26,7 +28,8 @@ export function HeroCopy() {
     const start = () => tl.play();
     if (document.documentElement.classList.contains("is-loading")) window.addEventListener("xp:ignited", start, { once: true });
     else gsap.delayedCall(0.15, start);
-    return () => { window.removeEventListener("xp:ignited", start); split.revert(); };
+    const offV = velocitySkew(h);
+    return () => { offV(); window.removeEventListener("xp:ignited", start); split.revert(); };
   }, { scope: ref, dependencies: [settings.hero_headline], revertOnUpdate: true });
   return (
     <div ref={ref} className="content max-w-5xl space-y-7">
@@ -41,8 +44,8 @@ export function HeroCopy() {
       </h1>
       <p className="max-w-lg text-lg text-chrome/75" data-fade>{settings.hero_sub}</p>
       <div className="flex flex-wrap gap-3" data-fade>
-        <Magnetic><button type="button" onClick={() => scrollToTarget("#library")} className="btn btn-primary" data-cursor="play">{settings.hero_cta_primary}</button></Magnetic>
-        <Magnetic><button type="button" onClick={() => scrollToTarget("#contact")} className="btn btn-ghost">{settings.hero_cta_secondary}</button></Magnetic>
+        <Magnetic><button type="button" onClick={() => scrollToTarget("#library")} className="btn btn-primary" data-cursor="play"><RollText>{settings.hero_cta_primary ?? "Watch the reel"}</RollText></button></Magnetic>
+        <Magnetic><button type="button" onClick={() => scrollToTarget("#contact")} className="btn btn-ghost"><RollText>{settings.hero_cta_secondary ?? "Start a project"}</RollText></button></Magnetic>
       </div>
       <p className="flex items-center gap-2.5 text-sm text-ash" data-fade>
         <NavMark className="h-6 w-6" /> {settings.credit_line}

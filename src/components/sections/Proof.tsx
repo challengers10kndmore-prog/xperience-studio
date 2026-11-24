@@ -12,6 +12,7 @@ import { LazyVideo } from "@/components/media/LazyVideo";
 import { ProjectMedia } from "@/components/media/ProjectMedia";
 import { usePlayer } from "@/components/media/Player";
 import { SectionHeader } from "./SectionHeader";
+import { Odometer } from "@/components/kinetic/Odometer";
 
 export function Proof() {
   const data = useSiteData();
@@ -29,26 +30,14 @@ export function Proof() {
 }
 
 function Stats({ stats }: { stats: Stat[] }) {
-  const ref = useRef<HTMLDListElement>(null);
-  useGSAP(() => {
-    const els = gsap.utils.toArray<HTMLElement>("[data-stat]", ref.current!);
-    els.forEach((el, i) => {
-      const s = stats[i];
-      const final = s.todo ? "TBC" : `${s.prefix ?? ""}${s.value.toLocaleString()}${s.suffix ?? ""}`;
-      if (reducedMotion()) { el.textContent = final; return; }
-      gsap.to(el, {
-        duration: 2.2, delay: i * 0.15, ease: "none",
-        scrambleText: { text: final, chars: "0123456789", revealDelay: 0.6, speed: 0.6 },
-        scrollTrigger: { trigger: ref.current, start: "top 80%" },
-      });
-    });
-  }, { scope: ref, dependencies: [stats] });
   return (
-    <dl ref={ref} className="content mt-16 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line lg:grid-cols-4">
+    <dl className="content mt-16 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line lg:grid-cols-4">
       {stats.map((s) => (
-        <div key={s.key} className="bg-carbon/90 p-6 backdrop-blur md:p-8">
-          <dt className="eyebrow mb-4 flex items-center gap-2">{s.label}{s.todo && <span className="rounded bg-amber-400/15 px-1.5 py-0.5 text-[0.5rem] text-amber-200">TODO</span>}</dt>
-          <dd className="timecode text-[clamp(2rem,4.5vw,3.6rem)] leading-none text-chrome" data-stat aria-label={s.todo ? "To be confirmed" : `${s.prefix ?? ""}${s.value}${s.suffix ?? ""}`}>00</dd>
+        <div key={s.key} className="bg-carbon/90 p-5 backdrop-blur sm:p-6 md:p-8">
+          <dt className="eyebrow mb-4 flex flex-wrap items-center gap-2">{s.label}{s.todo && <span className="rounded bg-amber-400/15 px-1.5 py-0.5 text-[0.5rem] text-amber-200">TODO</span>}</dt>
+          <dd className="timecode text-[clamp(1.9rem,1rem+3vw,3.6rem)] leading-none text-chrome">
+            <Odometer value={s.todo ? "TBC" : `${s.prefix ?? ""}${s.value.toLocaleString()}${s.suffix ?? ""}`} />
+          </dd>
         </div>
       ))}
     </dl>

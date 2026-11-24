@@ -38,7 +38,7 @@ export function TwoCrafts() {
         <div className={`absolute bottom-[12%] flex max-w-sm flex-col gap-4 ${ai || stacked ? "left-[var(--gutter)]" : "right-[var(--gutter)] items-end text-right"}`}>
           <span className={`eyebrow !text-[0.7rem] ${ai ? "!text-electric" : "!text-magenta"}`}>{ai ? "01 · Generate" : "02 · Cut"}</span>
           <h3 className="font-display text-[clamp(2.5rem,6vw,5.5rem)] font-semibold leading-[0.9]">{ai ? "AI Video" : "Video Editing"}</h3>
-          <p className="text-chrome/80">{ai ? copy.crafts.ai : copy.crafts.editing}</p>
+          <p data-words className="text-chrome/80">{ai ? copy.crafts.ai : copy.crafts.editing}</p>
           <span className={`inline-flex items-center gap-2 font-label text-[0.65rem] tracking-[0.25em] ${ai ? "text-electric" : "text-magenta"}`}>
             SEE THE WORK <ArrowUpRight className="size-4 transition-transform duration-500 group-hover:-translate-y-1 group-hover:translate-x-1" />
           </span>

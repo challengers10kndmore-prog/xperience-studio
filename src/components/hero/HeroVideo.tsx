@@ -10,6 +10,7 @@ import { drawCover, frameSetFor, frameUrl, loadOrder, nearestLoaded, type Varian
 import { drawDots, makeDots } from "./DotFigure";
 import { VideoWall } from "./VideoWall";
 import { HeroHud } from "./HeroHud";
+import { TextCylinder } from "@/components/kinetic/TextCylinder";
 
 /** On wide screens the figure stands right of centre (the copy owns the left). Videos frame Daniel in the middle. */
 const FIGURE_SHIFT = 0.15;
@@ -27,12 +28,9 @@ const smooth = (a: number, b: number, v: number) => { const t = clamp01((v - a) 
  */
 function HeroTicker() {
   const words = ["AI films", "Ads", "Music videos", "Product films", "Brand reveals", "Social edits", "Long-form", "Explainers"];
-  const row = [...words, ...words];
   return (
-    <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 z-10 overflow-hidden border-t border-line/60 bg-void/40 py-2.5 backdrop-blur-sm [mask-image:linear-gradient(90deg,transparent,#000_10%,#000_90%,transparent)]">
-      <div data-drift className="flex w-max gap-10 font-label text-[0.58rem] tracking-[0.3em] text-ash" style={{ animation: "ticker 40s linear infinite" }}>
-        {[0, 1].map((k) => <span key={k} className="flex gap-10">{row.map((w, i) => <span key={i} className="flex items-center gap-10">{w.toUpperCase()}<span className="text-magenta">✦</span></span>)}</span>)}
-      </div>
+    <div aria-hidden className="safe-bottom pointer-events-none absolute inset-x-0 bottom-0 z-10 border-t border-line/60 bg-void/40 pt-2 backdrop-blur-sm [mask-image:linear-gradient(90deg,transparent,#000_10%,#000_90%,transparent)]">
+      <TextCylinder items={words.map((w) => `${w.toUpperCase()}  ✦`)} radius={1400} itemClassName="font-label text-[0.6rem] tracking-[0.3em] text-ash" />
     </div>
   );
 }

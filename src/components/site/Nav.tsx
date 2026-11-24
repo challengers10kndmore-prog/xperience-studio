@@ -10,6 +10,7 @@ import { reducedMotion } from "@/motion/useReducedMotion";
 import { PAGES } from "@/data/pages";
 import { useSiteData } from "@/data/DataProvider";
 import { useXWipeNavigate } from "./XWipe";
+import { RollText } from "@/components/kinetic/RollText";
 
 /** Glass header: logo, the main pages, Start a project, and a full-screen menu with every page. */
 export function Nav({ markHidden = false }: { markHidden?: boolean }) {
@@ -48,7 +49,7 @@ export function Nav({ markHidden = false }: { markHidden?: boolean }) {
             })}
           </nav>
           <div className="flex items-center gap-2">
-            <Magnetic strength={0.25}><a href="/contact" onClick={link("/contact")} className="btn btn-primary hidden !px-4 !py-2.5 !text-[0.6rem] sm:inline-flex">Start a project</a></Magnetic>
+            <Magnetic strength={0.25}><a href="/contact" onClick={link("/contact")} className="btn btn-primary hidden !px-4 !py-2.5 !text-[0.6rem] sm:inline-flex"><RollText>Start a project</RollText></a></Magnetic>
             <button type="button" onClick={() => setMenu(true)} aria-expanded={menu} aria-controls="site-menu"
               className="group flex h-10 items-center gap-2.5 rounded-full border border-line bg-void/50 px-4 font-label text-[0.58rem] tracking-[0.22em] backdrop-blur hover:border-violet">
               <span className="flex flex-col gap-[3px]"><span className="block h-px w-4 bg-chrome transition-all group-hover:w-3" /><span className="block h-px w-4 bg-chrome" /></span> MENU

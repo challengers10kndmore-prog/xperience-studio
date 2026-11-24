@@ -5,6 +5,7 @@ import { XperienceLogo } from "@/components/brand/XperienceLogo";
 import { useWebGL } from "@/three/webgl";
 import { ScrollTrigger, useGSAP } from "@/motion/gsap";
 import { PAGES } from "@/data/pages";
+import { ChromeWordmark } from "@/components/kinetic/ChromeWordmark";
 
 const Footer3D = lazy(() => import("@/three/Footer3D"));
 
@@ -46,6 +47,7 @@ export function Footer() {
           </div>
         )}
       </div>
+      <div className="section relative z-10 pt-10"><ChromeWordmark /></div>
       <div className="section relative z-10 grid gap-10 py-14 md:grid-cols-3">
         <div className="space-y-3">
           <XperienceLogo variant="wordmark" className="w-48" />
