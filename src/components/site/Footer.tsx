@@ -4,7 +4,7 @@ import { useSiteData } from "@/data/DataProvider";
 import { XperienceLogo } from "@/components/brand/XperienceLogo";
 import { useWebGL } from "@/three/webgl";
 import { ScrollTrigger, useGSAP } from "@/motion/gsap";
-import { scrollToTarget } from "@/motion/SmoothScroll";
+import { PAGES } from "@/data/pages";
 
 const Footer3D = lazy(() => import("@/three/Footer3D"));
 
@@ -52,9 +52,7 @@ export function Footer() {
           <p className="text-sm text-ash">{settings.credit_line}</p>
         </div>
         <nav aria-label="Footer" className="grid grid-cols-2 gap-2 text-sm">
-          {[["#work", "Selected work"], ["#crafts", "Two crafts"], ["#library", "Library"], ["#process", "Process"], ["#services", "Services"], ["#contact", "Contact"]].map(([h, l]) => (
-            <a key={h} href={`/${h}`} onClick={(e) => { if (location.pathname === "/") { e.preventDefault(); scrollToTarget(h); } }} className="text-ash hover:text-chrome">{l}</a>
-          ))}
+          {PAGES.map((p) => <Link key={p.path} to={p.path} className="text-ash hover:text-chrome">{p.label}</Link>)}
           <Link to="/work/ai" className="text-ash hover:text-chrome">AI Video</Link>
           <Link to="/work/editing" className="text-ash hover:text-chrome">Video Editing</Link>
         </nav>

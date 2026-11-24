@@ -47,7 +47,7 @@ test("keyboard: skip link and player close with Escape", async ({ page, isMobile
   await expect(page.getByText("Skip to content")).toBeFocused();
   await page.locator("#library").scrollIntoViewIfNeeded();
   await page.getByRole("button", { name: "Fast-forward to the next film" }).click();
-  await page.getByRole("button", { name: /Play Creator Cut/ }).focus();
+  await page.getByRole("button", { name: "Play Creator Cut with sound" }).focus();
   await page.keyboard.press("Enter");
   await expect(page.getByRole("dialog", { name: "Creator Cut" })).toBeVisible();
   await page.keyboard.press("Escape");
