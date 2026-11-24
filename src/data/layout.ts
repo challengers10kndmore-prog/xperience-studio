@@ -1,6 +1,6 @@
 /** Home page sections Daniel can reorder / hide in admin > Website customization. The hero is always first, the footer last. */
 export const HOME_SECTIONS = [
-  { key: "work", label: "Work (full-screen reel)", hint: "Every published film, one at a time, with play / pause / next." },
+  { key: "work", label: "Work (3D carousel)", hint: "Every published film on a turning 3D ring, with play / pause / next." },
   { key: "premium", label: "Selected work (premium chapters)", hint: "3 to 6 premium films as pinned full-screen chapters." },
   { key: "manifesto", label: "Manifesto", hint: "The one-line statement, revealed on scroll." },
   { key: "crafts", label: "Two crafts", hint: "AI Video / Video Editing split screen." },

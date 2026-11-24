@@ -6,6 +6,8 @@ import { SiteLayout } from "@/components/site/SiteLayout";
 import Home from "@/pages/Home";
 
 const WorkPage = lazy(() => import("@/pages/work/WorkPage"));
+const SectionPage = lazy(() => import("@/pages/SectionPage"));
+const SECTION_PATHS = ["/work", "/selected-work", "/services", "/process", "/about", "/clients", "/before-after", "/toolkit", "/faq", "/contact"];
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const AdminApp = lazy(() => import("@/pages/admin/AdminApp"));
 const AdminLogin = lazy(() => import("@/pages/admin/AdminLogin"));
@@ -28,6 +30,7 @@ export function App() {
             <Route path="/admin/*" element={<AdminApp />} />
             <Route element={<DataProvider><SiteLayout /></DataProvider>}>
               <Route index element={<Home />} />
+              {SECTION_PATHS.map((p) => <Route key={p} path={p} element={<SectionPage />} />)}
               <Route path="/work/:discipline" element={<WorkPage />} />
               <Route path="/work/:discipline/:category" element={<WorkPage />} />
               <Route path="*" element={<NotFound />} />

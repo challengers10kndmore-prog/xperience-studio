@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { reducedMotion } from "@/motion/useReducedMotion";
+import { isLite } from "@/lib/perf";
 
 export type WebGLState = { ready: boolean; enabled: boolean; tier: number; mobile: boolean };
 const Ctx = createContext<WebGLState>({ ready: false, enabled: false, tier: 0, mobile: false });
@@ -19,14 +20,14 @@ export function WebGLProvider({ children }: { children: ReactNode }) {
     const forced = new URLSearchParams(location.search).get("webgl");
     const done = (tier: number, mobile: boolean) => {
       if (!alive) return;
-      const enabled = forced === "1" || (forced !== "0" && tier >= 2 && !reducedMotion() && supportsWebGL2());
+      const enabled = forced === "1" || (forced !== "0" && tier >= 2 && !isLite() && !reducedMotion() && supportsWebGL2());
       setState({ ready: true, enabled, tier, mobile });
     };
     try {
       const cached = sessionStorage.getItem(KEY);
       if (cached) { const c = JSON.parse(cached); done(c.tier, c.mobile); return; }
     } catch { /* ignore */ }
-    if (!supportsWebGL2()) { done(0, false); return; }
+    if (!supportsWebGL2() || (isLite() && forced !== "1")) { done(0, false); return; } // lite: skip the GPU benchmark download entirely
     import("detect-gpu")
       .then(({ getGPUTier }) => getGPUTier({ failIfMajorPerformanceCaveat: true }))
       .then((r) => {

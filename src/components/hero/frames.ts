@@ -31,8 +31,8 @@ export function nearestLoaded(frames: (HTMLImageElement | null)[], i: number) {
 }
 
 /** Cover-fit draw (like object-fit: cover), anchored right of centre on wide screens so the left third stays for copy. */
-export function drawCover(ctx: CanvasRenderingContext2D, img: CanvasImageSource, iw: number, ih: number, cw: number, ch: number, anchorX = 0.5) {
+export function drawCover(ctx: CanvasRenderingContext2D, img: CanvasImageSource, iw: number, ih: number, cw: number, ch: number, anchorX = 0.5, shift = 0) {
   const s = Math.max(cw / iw, ch / ih);
   const w = iw * s, h = ih * s;
-  ctx.drawImage(img, (cw - w) * anchorX, (ch - h) / 2, w, h);
+  ctx.drawImage(img, (cw - w) * anchorX + shift * cw, (ch - h) / 2, w, h);
 }

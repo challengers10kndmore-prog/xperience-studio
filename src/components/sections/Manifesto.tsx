@@ -3,6 +3,7 @@ import { useSiteData } from "@/data/DataProvider";
 import { gsap, SplitText, useGSAP } from "@/motion/gsap";
 import { reducedMotion } from "@/motion/useReducedMotion";
 import { SectionMedia } from "@/components/media/SectionMedia";
+import { FrameField } from "./FrameField";
 
 /**
  * Pinned SplitText scrub. The last sentence becomes a knockout text mask over the reel
@@ -21,6 +22,7 @@ export function Manifesto() {
     const leadEl = el.querySelector<HTMLElement>("[data-lead]");
     const mask = el.querySelector<HTMLElement>("[data-mask]");
     const maskText = el.querySelector<HTMLElement>("[data-mask-text]");
+    const field = el.querySelector<HTMLElement>("[data-field]");
     if (reducedMotion()) {
       gsap.from(el.querySelectorAll("[data-fade]"), { opacity: 0, duration: 0.8, stagger: 0.2, scrollTrigger: { trigger: el, start: "top 70%" } });
       return;
@@ -31,7 +33,9 @@ export function Manifesto() {
       defaults: { ease: "none" },
     });
     if (split) tl.fromTo(split.words, { opacity: 0.18, filter: "blur(4px)" }, { opacity: 1, filter: "blur(0px)", stagger: 0.08, duration: 0.6 });
+    if (field) tl.fromTo(field, { scale: 1.15 }, { scale: 1, duration: (split?.words.length ?? 6) * 0.08 + 0.6 }, 0);
     if (leadEl) tl.to(leadEl, { yPercent: -60, opacity: 0, duration: 0.6 }, "+=0.2");
+    if (field) tl.to(field, { opacity: 0, duration: 0.5 }, "<");
     tl.fromTo(maskText, { opacity: 0, yPercent: 30 }, { opacity: 1, yPercent: 0, duration: 0.5 }, "<0.1")
       .to(maskText, { scale: 28, duration: 1.6, ease: "power2.in" }, "+=0.3")
       .to(mask, { opacity: 0, duration: 0.4 }, ">-0.35");
@@ -48,6 +52,7 @@ export function Manifesto() {
           {last}
         </p>
       </div>
+      <div data-field className="pointer-events-none absolute inset-0 z-[15]"><FrameField /></div>
       <div className="pointer-events-none absolute inset-0 z-20 grid place-items-center px-6">
         {lead && <p key={lead} data-lead data-fade className="max-w-5xl text-balance text-center font-display text-[clamp(2.2rem,6vw,5.5rem)] font-semibold leading-[1.02]">{lead}</p>}
       </div>

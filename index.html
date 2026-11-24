@@ -26,7 +26,20 @@
   <body>
     <noscript><p style="color:#E6E8EE;font-family:sans-serif;padding:2rem">Xperience: AI video and video editing studio by Daniel Ogbeifun Osewe. Please enable JavaScript to watch the work.</p></noscript>
     <div id="root"><section class="section relative flex min-h-dvh flex-col justify-end pb-[12vh] pt-[var(--nav-h)]"><div class="content max-w-5xl space-y-7"><p class="eyebrow">AI Video · Video Editing</p><h1 class="text-balance text-[clamp(3rem,8.6vw,8.5rem)] font-semibold md:max-w-[62vw] md:text-[clamp(3rem,6.6vw,8rem)]">Stories, generated and cut by hand.</h1><p class="max-w-xl text-lg text-chrome/75">I'm Daniel Ogbeifun Osewe. I direct AI films and edit video for brands, artists and creators who need work that stops the scroll.</p></div></section><div class="boot" aria-hidden="true"><svg viewBox="0 0 400 400" width="140" height="140"><defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#C84BFF"/><stop offset=".5" stop-color="#7C3AED"/><stop offset="1" stop-color="#2F6BFF"/></linearGradient></defs><circle cx="200" cy="200" r="150" fill="none" stroke="url(#bg)" stroke-width="7" opacity=".35"/></svg></div></div>
-    <script>document.documentElement.classList.add("is-loading")</script>
+    <script>
+      (function () {
+        var d = document.documentElement, n = navigator;
+        d.classList.add("is-loading");
+        try {
+          var mem = n.deviceMemory || 8, cores = n.hardwareConcurrency || 8, save = n.connection && n.connection.saveData;
+          var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+          var lite = mem <= 4 || cores <= 2 || (cores <= 4 && mem < 8) || save || reduce;
+          if (/[?&]lite=1/.test(location.search)) lite = true;
+          if (/[?&]lite=0/.test(location.search)) lite = false;
+          if (lite) d.classList.add("lite");
+        } catch (e) {}
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

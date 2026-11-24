@@ -1,15 +1,18 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSiteData } from "@/data/DataProvider";
 import { featuredOf, siteProjects } from "@/data/placeholders";
-import { usePlayer } from "@/components/media/Player";
 import { useMediaQuery } from "@/hooks/useInView";
 import { mediaUrl } from "@/lib/media";
 import { reducedMotion } from "@/motion/useReducedMotion";
+import { isLite } from "@/lib/perf";
 import { HeroCopy } from "@/components/sections/HeroStatic";
 import { drawCover, frameSetFor, frameUrl, loadOrder, nearestLoaded, type Variant } from "./frames";
 import { drawDots, makeDots } from "./DotFigure";
-import { Shards } from "./Shards";
+import { VideoWall } from "./VideoWall";
+import { HeroHud } from "./HeroHud";
 
+/** On wide screens the figure stands right of centre (the copy owns the left). Videos frame Daniel in the middle. */
+const FIGURE_SHIFT = 0.15;
 const damp = (a: number, b: number, lambda: number, dt: number) => a + (b - a) * (1 - Math.exp(-lambda * dt));
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 const smooth = (a: number, b: number, v: number) => { const t = clamp01((v - a) / (b - a)); return t * t * (3 - 2 * t); };
@@ -22,9 +25,20 @@ const smooth = (a: number, b: number, v: number) => { const t = clamp01((v - a) 
  * - Featured films orbit as CSS 3D cards. Scroll-out scrubs the assembly backwards and flies the cards forward.
  * - Until the videos are uploaded, a 2D dot figure stands in with the same behaviour.
  */
+function HeroTicker() {
+  const words = ["AI films", "Ads", "Music videos", "Product films", "Brand reveals", "Social edits", "Long-form", "Explainers"];
+  const row = [...words, ...words];
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 z-10 overflow-hidden border-t border-line/60 bg-void/40 py-2.5 backdrop-blur-sm [mask-image:linear-gradient(90deg,transparent,#000_10%,#000_90%,transparent)]">
+      <div data-drift className="flex w-max gap-10 font-label text-[0.58rem] tracking-[0.3em] text-ash" style={{ animation: "ticker 40s linear infinite" }}>
+        {[0, 1].map((k) => <span key={k} className="flex gap-10">{row.map((w, i) => <span key={i} className="flex items-center gap-10">{w.toUpperCase()}<span className="text-magenta">✦</span></span>)}</span>)}
+      </div>
+    </div>
+  );
+}
+
 export function HeroVideo() {
   const data = useSiteData();
-  const open = usePlayer();
   const portrait = useMediaQuery("(max-aspect-ratio: 4/5)");
   const coarse = useMediaQuery("(hover: none), (pointer: coarse)");
   const variant: Variant = portrait ? "mobile" : "desktop";
@@ -32,12 +46,14 @@ export function HeroVideo() {
   const idle = data.sectionMedia["hero-idle"];
   const set = assembly?.published ? frameSetFor(assembly, variant) : null;
   const idleSrc = idle?.published ? mediaUrl(portrait ? idle.mobile_url || idle.desktop_url : idle.desktop_url || idle.mobile_url) : undefined;
-  const films = useMemo(() => featuredOf(siteProjects(data.projects)).slice(0, portrait ? 5 : 7), [data.projects, portrait]);
+  const films = useMemo(() => { const all = siteProjects(data.projects); const f = featuredOf(all); return (f.length >= 4 ? f : all).slice(0, 10); }, [data.projects]);
 
   const root = useRef<HTMLElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const idleVideo = useRef<HTMLVideoElement>(null);
   const shardsRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef(0);
+  const progressRef = useRef(0);
   const [idleOn, setIdleOn] = useState(false);
   const idleOnRef = useRef(false);
 
@@ -46,7 +62,7 @@ export function HeroVideo() {
     const reduced = reducedMotion();
     const cx = portrait ? 0.5 : 0.64;               // where the figure stands (fraction of width)
     const frames: (HTMLImageElement | null)[] = set ? new Array(set.count).fill(null) : [];
-    const dots = set ? [] : makeDots(portrait ? 1100 : 1800);
+    const dots = set ? [] : makeDots(isLite() ? 650 : portrait ? 1100 : 1800);
     let alive = true, raf = 0, last = performance.now(), lastDrawn = -1, w = 0, h = 0;
     let target = reduced ? 1 : 0.06, progress = reduced ? 1 : 0, scroll = 0, shardAngle = 0;
     const startedAt = performance.now();
@@ -109,6 +125,7 @@ export function HeroVideo() {
       if (coarse && !reduced) target = clamp01((now - startedAt) / 8000); // touch: play forward on load
       progress = damp(progress, target, 3.2, dt);
       const eff = reduced ? 1 : clamp01(Math.min(progress, 1 - scroll * 1.25));
+      scrollRef.current = scroll; progressRef.current = eff;
 
       // idle crossfade with hysteresis
       if (idleSrc && !idleOnRef.current && eff >= 0.995) { idleOnRef.current = true; setIdleOn(true); if (!reduced) idleVideo.current?.play().catch(() => {}); }
@@ -119,7 +136,7 @@ export function HeroVideo() {
         const idx = Math.round(eff * (set.count - 1));
         if (idx !== lastDrawn) {
           const img = nearestLoaded(frames, idx);
-          if (img) { ctx.clearRect(0, 0, w, h); drawCover(ctx, img, set.w, set.h, w, h, portrait ? 0.5 : 0.62); lastDrawn = idx; }
+          if (img) { ctx.clearRect(0, 0, w, h); drawCover(ctx, img, set.w, set.h, w, h, 0.5, portrait ? 0 : FIGURE_SHIFT); lastDrawn = idx; }
         }
       } else if (scroll < 1) {
         drawDots(ctx, dots, eff, w, h, now / 1000, cx);
@@ -165,17 +182,25 @@ export function HeroVideo() {
     <section ref={root} id="top" className="section relative flex min-h-dvh flex-col justify-end overflow-hidden pb-[12vh] pt-[var(--nav-h)]">
       <div aria-hidden className="absolute inset-0 -z-10 bg-void">
         {!set && <div className="media-placeholder absolute inset-0 opacity-70" />}
-        <canvas ref={canvas} className="absolute inset-0" />
+        <VideoWall films={films} cx={portrait ? 0.5 : 0.64} scroll={scrollRef} />
+        {/* the figure is "screened" over the wall: its dark background lets the films glow through */}
+        <canvas ref={canvas} className="absolute inset-0 mix-blend-screen" />
         {idleSrc && (
           <video ref={idleVideo} src={idleSrc} poster={mediaUrl(idle?.poster_url)} muted loop playsInline preload="none"
-            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${portrait ? "object-center" : "object-[62%_50%]"} ${idleOn ? "opacity-100" : "opacity-0"}`} />
+            className={`absolute inset-0 h-full w-full object-cover mix-blend-screen transition-opacity duration-700 ${idleOn ? "opacity-100" : "opacity-0"}`}
+            style={portrait ? undefined : { transform: `translateX(${FIGURE_SHIFT * 100}%)` }} />
         )}
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(7,6,13,.92)_0%,rgba(7,6,13,.55)_32%,rgba(7,6,13,0)_60%)] max-md:bg-[linear-gradient(0deg,rgba(7,6,13,.95)_0%,rgba(7,6,13,.4)_45%,rgba(7,6,13,0)_70%)]" />
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-void to-transparent" />
       </div>
-      <Shards ref={shardsRef} films={films} onOpen={(p, el) => open(p, el)} />
+      <HeroHud progress={progressRef} cx={portrait ? 0.5 : 0.64} />
+      <div ref={shardsRef} hidden />
       <HeroCopy />
-      <p className="eyebrow pointer-events-none absolute bottom-6 right-[clamp(1.25rem,4vw,4rem)] z-10 hidden md:block" aria-hidden>Move closer to assemble</p>
+      <HeroTicker />
+      <div aria-hidden className="pointer-events-none absolute bottom-16 right-[clamp(1.25rem,4vw,4rem)] z-10 hidden flex-col items-end gap-2 md:flex">
+        <span className="eyebrow !text-[0.55rem]">Move closer to assemble · scroll</span>
+        <span className="relative h-10 w-px overflow-hidden bg-chrome/20"><span className="absolute inset-x-0 top-0 h-1/2 animate-[scrollcue_1.8s_ease-in-out_infinite] bg-magenta" /></span>
+      </div>
     </section>
   );
 }

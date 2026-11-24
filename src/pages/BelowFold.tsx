@@ -6,7 +6,7 @@ import { Manifesto } from "@/components/sections/Manifesto";
 import { PremiumSamples } from "@/components/sections/PremiumSamples";
 import { TwoCrafts } from "@/components/sections/TwoCrafts";
 import { BeforeAfter } from "@/components/sections/BeforeAfter";
-import { WorkReel } from "@/components/sections/WorkReel";
+import { WorkCarousel } from "@/components/sections/WorkCarousel";
 import { Process } from "@/components/sections/Process";
 import { Toolkit } from "@/components/sections/Toolkit";
 import { Proof } from "@/components/sections/Proof";
@@ -15,7 +15,7 @@ import { Faq, FinaleCta } from "@/components/sections/Finale";
 import { LightLine } from "@/motion/LightLine";
 
 const RENDER: Record<SectionKey, () => ReactNode> = {
-  work: () => <WorkReel />,
+  work: () => <WorkCarousel />,
   premium: () => <PremiumSamples />,
   manifesto: () => <Manifesto />,
   crafts: () => <TwoCrafts />,
@@ -28,7 +28,7 @@ const RENDER: Record<SectionKey, () => ReactNode> = {
   contact: () => <FinaleCta />,
 };
 /** Full-bleed sections don't need a light-line before them. */
-const NO_LINE = new Set<SectionKey>(["work", "manifesto", "premium", "contact"]);
+const NO_LINE = new Set<SectionKey>(["manifesto", "premium", "contact"]);
 
 /** Everything below the hero, in the order set in admin > Website customization. Own chunk so the hero paints first. */
 export default function BelowFold() {

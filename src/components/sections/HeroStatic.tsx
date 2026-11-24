@@ -15,6 +15,8 @@ export function HeroCopy() {
     const h = ref.current!.querySelector("h1")!;
     if (reducedMotion()) return;
     const split = SplitText.create(h, { type: "lines,words", mask: "lines" });
+    // gradient on the highlighted word goes on the split word itself (background-clip text breaks inside masks)
+    split.words.forEach((w) => { if ((w as HTMLElement).querySelector("[data-hl]") || (w as HTMLElement).closest("[data-hl]")) (w as HTMLElement).classList.add("text-gradient"); });
     // Only transforms here (no opacity): the copy counts as painted immediately, which keeps LCP fast
     // even while the Ignition intro plays over it.
     gsap.timeline({ delay: document.documentElement.classList.contains("is-loading") ? 2.9 : 0.2 })
@@ -24,11 +26,18 @@ export function HeroCopy() {
   }, { scope: ref, dependencies: [settings.hero_headline], revertOnUpdate: true });
   return (
     <div ref={ref} className="content max-w-5xl space-y-7">
-      <p className="eyebrow" data-fade>AI Video · Video Editing</p>
-      <h1 key={settings.hero_headline} className="text-balance text-[clamp(3rem,8.6vw,8.5rem)] font-semibold md:max-w-[62vw] md:text-[clamp(3rem,6.6vw,8rem)]">{settings.hero_headline}</h1>
-      <p className="max-w-xl text-lg text-chrome/75" data-fade>{settings.hero_sub}</p>
+      <p className="eyebrow flex items-center gap-3" data-fade>
+        <span className="inline-flex items-center gap-2 rounded-full border border-line bg-void/50 px-3 py-1.5 text-chrome/90 backdrop-blur"><span className="size-1.5 rounded-full bg-[#ff3b5c] shadow-[0_0_8px_#ff3b5c]" /> Now booking</span>
+        AI Video · Video Editing
+      </p>
+      <h1 key={settings.hero_headline} className="text-balance text-[clamp(3rem,8.6vw,8.5rem)] font-semibold leading-[0.9] md:max-w-[50vw] md:text-[clamp(3rem,5.4vw,6.6rem)]">
+        {(settings.hero_headline ?? "").split(" ").map((w, i, arr) => (
+          <span key={i} data-hl={i === 1 && arr.length > 2 ? "" : undefined}>{w}{i < arr.length - 1 ? " " : ""}</span>
+        ))}
+      </h1>
+      <p className="max-w-lg text-lg text-chrome/75" data-fade>{settings.hero_sub}</p>
       <div className="flex flex-wrap gap-3" data-fade>
-        <Magnetic><button type="button" onClick={() => scrollToTarget("#work")} className="btn btn-primary" data-cursor="play">{settings.hero_cta_primary}</button></Magnetic>
+        <Magnetic><button type="button" onClick={() => scrollToTarget("#library")} className="btn btn-primary" data-cursor="play">{settings.hero_cta_primary}</button></Magnetic>
         <Magnetic><button type="button" onClick={() => scrollToTarget("#contact")} className="btn btn-ghost">{settings.hero_cta_secondary}</button></Magnetic>
       </div>
       <p className="flex items-center gap-2.5 text-sm text-ash" data-fade>

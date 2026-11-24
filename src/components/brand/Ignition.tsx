@@ -2,6 +2,7 @@ import { useRef } from "react";
 import { gsap, Flip, useGSAP } from "@/motion/gsap";
 import { reducedMotion } from "@/motion/useReducedMotion";
 import { XperienceLogo } from "./XperienceLogo";
+import { isLite } from "@/lib/perf";
 
 const VISITED = "xp-visited";
 /** Read once per page load (StrictMode runs effects twice; the flag must not flip between runs). */
@@ -75,7 +76,9 @@ export function Ignition({ onDone, replay = false }: { onDone: () => void; repla
       .to(root.current, { backgroundColor: "rgba(7,6,13,0)", duration: 0.6, ease: "power2.inOut" }, 2.55)
       .set(root.current, { opacity: 0 }, 3.25);
 
-    if (repeat) tl.timeScale(tl.duration() / 0.8);
+    // first visit ~2.3 s (was 2.8), repeat visits and low-spec devices 0.8 s
+    if (repeat || isLite()) tl.timeScale(tl.duration() / 0.8);
+    else tl.timeScale(1.2);
     return () => { lenis?.start(); };
   });
 

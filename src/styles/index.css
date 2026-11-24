@@ -106,3 +106,28 @@ html.lenis, html.lenis body { height: auto; }
 /* Static boot screen in index.html (covers the pre-rendered hero copy until the app takes over). */
 .boot { position: fixed; inset: 0; z-index: 500; display: grid; place-items: center; background: var(--color-void); }
 html:not(.is-loading) .boot { display: none; }
+
+/* ---------- Lite mode (low-spec devices): drop the expensive extras ---------- */
+.lite .grain { display: none; }
+.lite .media-placeholder, .lite [data-drift] { animation: none !important; }
+.lite [class*="backdrop-blur"] { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+.lite .lite-noblur { filter: none !important; }
+.lite .lite-hide { display: none !important; }
+
+@keyframes logo-float { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-6%) rotate(-2deg); } }
+
+/* Reflective neon floor under 3D content */
+@layer components {
+/* Chrome-rim card: the logo's metal edge + violet rim light (used on reel cards and page cards) */
+.chrome-card { border-radius: 1rem; background: #0c0a15; isolation: isolate; }
+.chrome-card::before { content: ""; position: absolute; inset: 0; padding: 1px; border-radius: inherit; z-index: 2; pointer-events: none;
+  background: linear-gradient(135deg, rgba(255,255,255,.55), rgba(143,139,163,.15) 30%, rgba(124,58,237,.6) 55%, rgba(47,107,255,.35) 75%, rgba(255,255,255,.4));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+.chrome-card::after { content: ""; position: absolute; inset: -1px; border-radius: inherit; z-index: -1; pointer-events: none; box-shadow: 0 30px 80px -30px rgba(124,58,237,.55), 0 0 0 1px rgba(43,38,64,.6); }
+
+}
+.chrome-card:not(.absolute):not(.fixed) { position: relative; }
+.neon-floor { background: radial-gradient(60% 100% at 50% 0%, rgba(124,58,237,.35), rgba(47,107,255,.12) 40%, transparent 70%), linear-gradient(to bottom, rgba(7,6,13,0), #07060d 85%); }
+@keyframes frame-drift { from { transform: translateY(0); } to { transform: translateY(-50%); } }
+@keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@keyframes scrollcue { 0% { transform: translateY(-100%); } 100% { transform: translateY(200%); } }

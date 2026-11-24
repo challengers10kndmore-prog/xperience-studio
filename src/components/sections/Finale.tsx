@@ -49,10 +49,10 @@ function FaqItem({ q, a }: { q: string; a: string }) {
   );
 }
 
-export function FinaleCta() {
+export function FinaleCta({ openForm = false }: { openForm?: boolean }) {
   const { settings } = useSiteData();
   const root = useRef<HTMLElement>(null);
-  const [showForm, setShowForm] = useState(false);
+  const [showForm, setShowForm] = useState(openForm);
   useGSAP(() => {
     if (reducedMotion()) return;
     gsap.from("[data-cta-line]", { yPercent: 100, opacity: 0, stagger: 0.1, duration: 1.4, ease: "expo", scrollTrigger: { trigger: root.current, start: "top 70%" } });
