@@ -1,4 +1,6 @@
 import { getSupabase } from "@/lib/supabase";
+import type { DriveItem } from "../../shared/drive";
+export type { DriveItem };
 
 export class ApiError extends Error {
   constructor(message: string, public status: number) { super(message); }
@@ -34,6 +36,7 @@ export const adminApi = {
   publish: (table: string, id?: string) => call<{ ok: true }>("/api/publish", { method: "POST", body: JSON.stringify({ table, id }) }),
   status: () => call<SyncStatus>("/api/admin/status"),
   setSource: (data: "auto" | "github" | "supabase") => call<{ ok: true }>("/api/admin/source", { method: "POST", body: JSON.stringify({ data }) }),
+  drive: (links: string) => call<{ items: DriveItem[]; unknown: string[] }>("/api/admin/drive", { method: "POST", body: JSON.stringify({ links }) }),
 };
 
 // --- remember dispatches so a pending item shows "Publishing" rather than "Pending" ---

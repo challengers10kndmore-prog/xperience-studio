@@ -65,3 +65,32 @@ describe("chunked uploads + captions", () => {
     expect(c.length).toBeLessThanOrEqual(90);
   });
 });
+
+// @ts-expect-error plain .mjs module without types
+import { previewWindow, driveIdOf, driveDownloadUrl, PREVIEW_S, aspectOf } from "./lib.mjs";
+describe("Google Drive films", () => {
+  it("plans a 10 s preview with no master upload", () => {
+    const jobs = planJobs("projects", { id: "abc", inbox: { video_url: { drive: "1AbCdEfGhIjKlMnOpQrSt", name: "Ad.mp4" } } });
+    expect(jobs).toHaveLength(1);
+    expect(jobs[0]).toMatchObject({ field: "video_url", out: "v/abc.mp4", teaser: "t/abc.mp4", poster: "p/abc.jpg", master: false, preview: 10 });
+    expect(PREVIEW_S).toBe(10);
+    expect(driveIdOf({ drive: "bad id!" })).toBeNull();
+    expect(driveDownloadUrl("1AbC")).toContain("confirm=t");
+  });
+  it("detects the format", () => {
+    expect([aspectOf(1920, 1080), aspectOf(1080, 1920), aspectOf(1080, 1080), aspectOf(1080, 1350), aspectOf(2560, 1080), aspectOf(1440, 1080)]).toEqual(["16:9", "9:16", "1:1", "4:5", "21:9", "16:9"]);
+  });
+  it("picks the preview window around the best frame, inside the film", () => {
+    expect(previewWindow(120, 60)).toEqual({ start: 57, length: 10 });
+    expect(previewWindow(120, 1)).toEqual({ start: 0, length: 10 });
+    expect(previewWindow(120, 119)).toEqual({ start: 110, length: 10 });
+    expect(previewWindow(8, 4)).toEqual({ start: 0, length: 8 });
+  });
+  it("cuts with -ss before the input and -t after; teasers stay at 6 s", () => {
+    const a = ffmpegArgs({ input: "i", output: "o", audio: true, start: 57, length: 10 });
+    expect(a.join(" ")).toContain("-ss 57 -i i -t 10");
+    const t = ffmpegArgs({ input: "i", output: "o", teaser: true, start: 57, length: 10 });
+    expect(t.join(" ")).toContain("-ss 57 -i i -t 6");
+    expect(ffmpegArgs({ input: "i", output: "o", teaser: true }).join(" ")).toContain("-i i -t 6");
+  });
+});

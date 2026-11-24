@@ -50,6 +50,7 @@ export const resources: Resource[] = [
       { name: "subcategory", label: "Sub-category / industry", type: "text" },
       { name: "aspect_ratio", label: "Format", type: "select", options: ASPECTS },
       { name: "video_url", label: "Video", type: "media", accept: "video" },
+      { name: "source_url", label: "…or a Google Drive link", type: "url", help: "Paste a Drive link instead of uploading (shared as “Anyone with the link”). The site makes a 10-second preview and the poster from it, and plays the full film from Drive." },
       { name: "poster_url", label: "Poster image: upload your own (optional; the sharpest frame is picked automatically)", type: "media", accept: "image" },
       { name: "caption", label: "Caption (one line, about 90 characters)", type: "text", help: "Shown on the cover card and link previews. Leave empty and one is drafted from the title and brief." },
       { name: "show_caption", label: "Show caption on poster", type: "bool", help: "Use the cover card (with the caption) as this film's poster on the site." },

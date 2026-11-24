@@ -15,6 +15,32 @@ export function frameArgs(input, dir, { w, h }, durationS) {
     "-frames:v", String(MAX_FRAMES), "-an", "-c:v", "libwebp", "-quality", "68", "-compression_level", "4", `${dir}/f%03d.webp`];
 }
 
+/** Length of the on-site preview for films that come from Google Drive (seconds). */
+export const PREVIEW_S = 10;
+
+/** Inbox entry { drive: "<file id>" } = a Google Drive file the sync downloads itself. */
+export const driveIdOf = (src) => (src && typeof src === "object" && typeof src.drive === "string" && /^[\w-]{10,}$/.test(src.drive) ? src.drive : null);
+
+/** Public download URL (confirm=t skips the "can't scan for viruses" page on big files). */
+export const driveDownloadUrl = (id) => `https://drive.usercontent.google.com/download?id=${encodeURIComponent(id)}&export=download&confirm=t`;
+
+/**
+ * Which part of a long film becomes the preview: a window around the best frame (it starts ~30% before it),
+ * kept inside the film. Short films are used whole.
+ */
+export function previewWindow(durationS, bestT, len = PREVIEW_S) {
+  if (!(durationS > len + 0.5)) return { start: 0, length: Math.max(0.1, durationS || len) };
+  const start = Math.min(Math.max(0, bestT - len * 0.3), durationS - len);
+  return { start: Math.round(start * 100) / 100, length: len };
+}
+
+/** Nearest site format for a video's shape (Drive films arrive without one). */
+export function aspectOf(w, h) {
+  const r = w / Math.max(1, h);
+  const opts = [["16:9", 16 / 9], ["9:16", 9 / 16], ["1:1", 1], ["4:5", 4 / 5], ["21:9", 21 / 9]];
+  return opts.reduce((best, o) => (Math.abs(Math.log(r / o[1])) < Math.abs(Math.log(r / best[1])) - 0.01 ? o : best))[0];
+}
+
 /** Which inbox fields become which published files, per table. */
 export function planJobs(table, row) {
   const inbox = { ...(row.inbox ?? {}) };
@@ -24,7 +50,8 @@ export function planJobs(table, row) {
   for (const [field, src] of Object.entries(inbox)) {
     if (field.startsWith("_")) continue; // instructions (_poster, _cover), not files
     const isParts = src && typeof src === "object" && Array.isArray(src.parts) && src.parts.length > 0;
-    if (!src || (typeof src !== "string" && !isParts)) continue;
+    const isDrive = !!driveIdOf(src);
+    if (!src || (typeof src !== "string" && !isParts && !isDrive)) continue;
     const j = jobFor(table, row, id, field, src);
     if (j) jobs.push(j);
   }
@@ -34,6 +61,8 @@ export function planJobs(table, row) {
 function jobFor(table, row, id, field, src) {
   switch (table) {
     case "projects":
+      // From Google Drive: the site keeps only a short preview (the full film streams from Drive), so no master upload.
+      if (field === "video_url" && driveIdOf(src)) return { field, src, kind: "video", out: `v/${id}.mp4`, audio: true, poster: `p/${id}.jpg`, teaser: `t/${id}.mp4`, master: false, preview: PREVIEW_S };
       if (field === "video_url") return { field, src, kind: "video", out: `v/${id}.mp4`, audio: true, poster: `p/${id}.jpg`, teaser: `t/${id}.mp4`, master: true };
       if (field === "poster_url") return { field, src, kind: "image", out: `p/${id}.jpg` };
       return null;
@@ -66,9 +95,12 @@ function jobFor(table, row, id, field, src) {
 /** Max 1080p on the short side, even dimensions, never upscale. */
 export const SCALE_1080 = "scale='if(gte(iw,ih),-2,min(1080,iw))':'if(gte(iw,ih),min(1080,ih),-2)'";
 
-export function ffmpegArgs({ input, output, audio, loop = false, teaser = false, videoKbps = null }) {
-  const a = ["-y", "-hide_banner", "-loglevel", "error", "-i", input];
-  if (teaser) a.push("-ss", "0", "-t", "6");
+export function ffmpegArgs({ input, output, audio, loop = false, teaser = false, videoKbps = null, start = 0, length = null }) {
+  const a = ["-y", "-hide_banner", "-loglevel", "error"];
+  if (start > 0) a.push("-ss", String(start)); // seek before -i: fast, and frame-accurate because we re-encode
+  a.push("-i", input);
+  const len = teaser ? Math.min(6, length ?? 6) : length;
+  if (len) a.push("-t", String(len));
   a.push("-map", "0:v:0");
   a.push("-vf", teaser ? `${SCALE_1080.replace(/1080/g, "720")},fps=30` : SCALE_1080);
   a.push("-c:v", "libx264", "-profile:v", "high", "-pix_fmt", "yuv420p", "-preset", "veryfast");

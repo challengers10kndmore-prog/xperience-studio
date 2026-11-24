@@ -254,6 +254,7 @@ export type Database = {
           show_caption: boolean
           slug: string
           sort_order: number
+          source_url: string | null
           subcategory: string | null
           teaser_url: string | null
           title: string
@@ -293,6 +294,7 @@ export type Database = {
           show_caption?: boolean
           slug: string
           sort_order?: number
+          source_url?: string | null
           subcategory?: string | null
           teaser_url?: string | null
           title: string
@@ -332,6 +334,7 @@ export type Database = {
           show_caption?: boolean
           slug?: string
           sort_order?: number
+          source_url?: string | null
           subcategory?: string | null
           teaser_url?: string | null
           title?: string

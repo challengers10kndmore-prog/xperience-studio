@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { X, Download, Share2 } from "lucide-react";
+import { X, Download, Share2, Play } from "lucide-react";
+import { driveFileId, drivePreviewUrl } from "../../../shared/drive";
 import { gsap } from "@/motion/gsap";
 import { reducedMotion } from "@/motion/useReducedMotion";
 import { isPlayableUrl, mediaUrl } from "@/lib/media";
@@ -39,6 +40,11 @@ function PlayerOverlay({ p, rect, from, onClose }: { p: SiteProject; rect: DOMRe
   const closeBtn = useRef<HTMLButtonElement>(null);
   const src = mediaUrl(p.video_url);
   const playable = src && isPlayableUrl(src);
+  // Films from Google Drive: the site plays a 10 s preview; the full film streams from Drive on request
+  const driveId = driveFileId(p.source_url);
+  const [full, setFull] = useState(!!driveId && !playable);
+  const [ended, setEnded] = useState(false);
+  const watchFull = () => { video.current?.pause(); setFull(true); };
 
   useEffect(() => {
     const lenis = (window as unknown as { __lenis?: { stop(): void; start(): void } }).__lenis;
@@ -82,8 +88,20 @@ function PlayerOverlay({ p, rect, from, onClose }: { p: SiteProject; rect: DOMRe
         <button ref={closeBtn} onClick={close} className="btn btn-ghost !p-3" aria-label="Close player" data-cursor="close"><X className="size-5" /></button>
       </div>
       <div ref={frame} className="relative min-h-0 flex-1 overflow-hidden rounded-lg bg-black will-change-transform">
-        {playable ? (
-          <video ref={video} src={src} poster={mediaUrl(p.poster_url)} controls playsInline autoPlay className="h-full w-full object-contain" />
+        {full && driveId ? (
+          <iframe src={drivePreviewUrl(driveId)} title={`${p.title}: full film`} allow="autoplay; fullscreen; encrypted-media" allowFullScreen className="h-full w-full border-0 bg-black" />
+        ) : playable ? (
+          <>
+            <video ref={video} src={src} poster={mediaUrl(p.poster_url)} controls playsInline autoPlay onEnded={() => setEnded(true)} onPlay={() => setEnded(false)} className="h-full w-full object-contain" />
+            {driveId && (
+              <>
+                <span className="pointer-events-none absolute left-3 top-3 rounded-full bg-void/70 px-3 py-1 font-label text-[0.6rem] tracking-[0.25em] text-chrome backdrop-blur">10-SECOND PREVIEW</span>
+                <div className={`absolute inset-0 grid place-items-center bg-void/60 backdrop-blur-sm transition-opacity duration-500 ${ended ? "opacity-100" : "pointer-events-none opacity-0"}`}>
+                  <button type="button" onClick={watchFull} tabIndex={ended ? 0 : -1} className="btn btn-primary" data-cursor="play"><Play className="mr-1 size-4" /> Watch the full film</button>
+                </div>
+              </>
+            )}
+          </>
         ) : (
           <div className="grid h-full w-full place-items-center" style={{ background: artFor(p.id, p.discipline) }}>
             <p className="eyebrow !text-chrome">{p.placeholder ? "Placeholder: the film appears here once uploaded" : "Video coming soon"}</p>
@@ -103,6 +121,7 @@ function PlayerOverlay({ p, rect, from, onClose }: { p: SiteProject; rect: DOMRe
             const url = `${location.origin}/p/${p.slug}`;
             try { if (navigator.share) await navigator.share({ title: p.title, url }); else { await navigator.clipboard.writeText(url); alert("Link copied"); } } catch { /* cancelled */ }
           }}><Share2 className="size-4" /> Share</button>}
+          {driveId && !full && <button type="button" onClick={watchFull} className="btn btn-primary !py-2.5"><Play className="mr-1 size-4" /> Watch the full film</button>}
           {p.full_video_url && <a href={p.full_video_url} className="inline-flex items-center gap-1.5 text-ash underline-offset-4 hover:text-chrome hover:underline" target="_blank" rel="noreferrer"><Download className="size-4" /> Full-quality file</a>}
         </div>
       </div>

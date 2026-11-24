@@ -1,3 +1,4 @@
+import { driveFileId } from "../../shared/drive";
 import { slugify } from "@/lib/utils";
 import { adminApi, markDispatched, scheduleManifestRefresh } from "./api";
 import { compressVideo, isVideoFile, shouldCompress, VideoCompressionError } from "./compressVideo";
@@ -67,6 +68,11 @@ export async function saveResource(res: Resource, row: AnyRow, files: Record<str
     onProgress?.({ stage: "uploading", ratio: 0, note: file.name });
     const entry: InboxEntry = await uploadToInbox(`${res.table}/${id}/${field}-${Date.now()}.${ext}`, file, (r, note) => onProgress?.({ stage: "uploading", ratio: r, note: note ? `${file.name} · ${note}` : file.name }));
     add[field] = entry;
+  }
+  // a new Google Drive link (and no file uploaded) -> the sync downloads it and makes the preview + poster
+  if (res.table === "projects" && !add.video_url) {
+    const was = driveFileId(opts.original?.source_url as string | undefined), now = driveFileId(saved.source_url as string | undefined);
+    if (now && now !== was) add.video_url = { drive: now };
   }
   // a caption/title change on a published project re-renders its cover card
   if (res.table === "projects" && opts.original && saved.poster_url && !entries.length && COVER_FIELDS.some((k) => (opts.original as AnyRow)[k] !== saved[k])) add._cover = true;

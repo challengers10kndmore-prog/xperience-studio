@@ -1,9 +1,12 @@
 import { useCallback, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { UploadCloud } from "lucide-react";
+import { UploadCloud, Link2 } from "lucide-react";
+import { adminApi, markDispatched, type DriveItem } from "../api";
+import { db } from "../db";
+import { driveFileId, driveViewUrl, titleFromName } from "../../../shared/drive";
 import { Button } from "@/components/ui/button";
-import { NativeSelect } from "@/components/ui/input";
+import { NativeSelect, Textarea } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { slugify } from "@/lib/utils";
@@ -27,6 +30,7 @@ export default function ProjectsPage() {
       <TabsList>
         <TabsTrigger value="all-projects">All projects</TabsTrigger>
         <TabsTrigger value="bulk">Bulk upload</TabsTrigger>
+        <TabsTrigger value="drive">From Google Drive</TabsTrigger>
         <TabsTrigger value="premium">Premium order</TabsTrigger>
         <TabsTrigger value="featured">Featured order</TabsTrigger>
       </TabsList>
@@ -41,6 +45,7 @@ export default function ProjectsPage() {
           </>} />
       </TabsContent>
       <TabsContent value="bulk"><BulkUpload /></TabsContent>
+      <TabsContent value="drive"><DriveImport /></TabsContent>
       <TabsContent value="premium"><OrderList kind="premium" /></TabsContent>
       <TabsContent value="featured"><OrderList kind="featured" /></TabsContent>
     </Tabs>
@@ -159,6 +164,108 @@ function BulkUpload() {
         <Button onClick={run} disabled={running || !jobs.some((j) => !j.done)}>{running ? "Uploading…" : `Upload ${jobs.filter((j) => !j.done).length} video(s)`}</Button>
         <Button variant="ghost" onClick={() => setJobs([])} disabled={running}>Clear</Button>
       </div>
+    </div>
+  );
+}
+
+/** Paste Google Drive links (files or whole folders): each video becomes a project with a 10 s preview + poster made by the sync. */
+export function DriveImport() {
+  const qc = useQueryClient();
+  const { data: existing = [] } = useRows(res);
+  const [text, setText] = useState("");
+  const [discipline, setDiscipline] = useState("ai");
+  const [publish, setPublish] = useState(true);
+  const [checking, setChecking] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [items, setItems] = useState<(DriveItem & { pick: boolean; dupe: boolean })[]>([]);
+  const [unknown, setUnknown] = useState<string[]>([]);
+  const imported = new Set(existing.map((r) => driveFileId(r.source_url as string | undefined)).filter(Boolean));
+
+  async function check() {
+    setChecking(true); setItems([]); setUnknown([]);
+    try {
+      const r = await adminApi.drive(text);
+      setItems(r.items.map((i) => ({ ...i, dupe: imported.has(i.id), pick: i.status === "ok" && !imported.has(i.id) })));
+      setUnknown(r.unknown);
+      if (!r.items.length) toast.error("No Google Drive links found in what you pasted.");
+    } catch (e) { toast.error(e instanceof Error ? e.message : "Couldn't check the links"); }
+    setChecking(false);
+  }
+
+  async function run() {
+    const chosen = items.filter((i) => i.pick);
+    if (!chosen.length) return;
+    setImporting(true);
+    try {
+      const base = Date.now();
+      const rows = chosen.map((i, k) => {
+        const title = titleFromName(i.name);
+        return {
+          title, slug: `${slugify(title)}-${Math.random().toString(36).slice(2, 6)}`, discipline, aspect_ratio: "16:9", tools: [],
+          published: publish, source_url: driveViewUrl(i.id), sort_order: 1000 + k,
+          inbox: { video_url: { drive: i.id, name: i.name } }, media_status: "pending", media_error: null, created_at: new Date(base + k).toISOString(),
+        };
+      });
+      const ids: string[] = [];
+      for (let k = 0; k < rows.length; k += 50) {
+        const { data, error } = await db().from("projects").insert(rows.slice(k, k + 50)).select("id");
+        if (error) throw new Error(error.message);
+        ids.push(...(data ?? []).map((d: { id: string }) => d.id));
+      }
+      // one sync run processes every pending row
+      try { await adminApi.publish("projects", ids[0]); ids.forEach((id) => markDispatched("projects", id)); } catch { /* the hourly run picks them up */ }
+      qc.invalidateQueries({ queryKey: ["admin", "projects"] });
+      toast.success(`${rows.length} film(s) added. Each one is downloaded, gets a 10-second preview and a poster, then appears on the site${publish ? "" : " once you switch on Published"}. Big batches take a while: watch “Publishing” in All projects.`);
+      setItems([]); setText("");
+    } catch (e) { toast.error(e instanceof Error ? e.message : "Import failed"); }
+    setImporting(false);
+  }
+
+  const picked = items.filter((i) => i.pick).length;
+  const badge = (i: (typeof items)[number]) =>
+    i.dupe ? <span className="text-ash">Already imported</span>
+      : i.status === "ok" ? <span className="text-emerald-300">Ready{i.note ? ` · ${i.note}` : ""}</span>
+      : <span className={i.status === "not-video" ? "text-ash" : "text-rose-300"}>{i.note ?? i.status}</span>;
+  return (
+    <div className="space-y-4">
+      <div>
+        <h1 className="font-body text-2xl font-semibold tracking-normal">From Google Drive</h1>
+        <p className="mt-1 max-w-2xl text-sm text-ash">Paste Drive links: single videos or whole folders (one per line). Nothing uploads from your device. For each video the site makes a 10-second preview and picks the poster frame; visitors can press “Watch the full film” to play it from Drive.</p>
+        <p className="mt-2 max-w-2xl rounded-md border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-200">In Drive, each file or folder must be shared as <b>“Anyone with the link” (Viewer)</b>. Share a whole folder once and every video inside works.</p>
+      </div>
+      <Textarea rows={6} value={text} onChange={(e) => setText(e.target.value)} placeholder={"https://drive.google.com/drive/folders/…\nhttps://drive.google.com/file/d/…/view?usp=sharing"} aria-label="Google Drive links" />
+      <div className="flex flex-wrap items-center gap-4">
+        <label className="flex items-center gap-2 text-sm text-ash">Discipline
+          <NativeSelect className="w-48" value={discipline} onChange={(e) => setDiscipline(e.target.value)}>
+            {DISCIPLINES.map((d) => <option key={d.value} value={d.value}>{d.label}</option>)}
+          </NativeSelect>
+        </label>
+        <label className="flex items-center gap-2 text-sm"><input type="checkbox" className="accent-violet" checked={publish} onChange={(e) => setPublish(e.target.checked)} /> Show on the site as soon as each is ready</label>
+        <Button onClick={check} disabled={checking || !text.trim()}><Link2 className="mr-1.5 size-4" />{checking ? "Checking links…" : "Check links"}</Button>
+      </div>
+      {unknown.length > 0 && <p className="text-sm text-rose-300">Not Drive links (ignored): {unknown.slice(0, 5).join(", ")}{unknown.length > 5 ? ` and ${unknown.length - 5} more` : ""}</p>}
+      {items.length > 0 && (
+        <>
+          <div className="flex items-center justify-between text-sm text-ash">
+            <span>{items.length} found · {picked} selected</span>
+            <span className="flex gap-3">
+              <button type="button" className="underline" onClick={() => setItems((all) => all.map((i) => ({ ...i, pick: i.status === "ok" && !i.dupe })))}>Select all ready</button>
+              <button type="button" className="underline" onClick={() => setItems((all) => all.map((i) => ({ ...i, pick: false })))}>None</button>
+            </span>
+          </div>
+          <ul className="max-h-[50vh] space-y-1.5 overflow-auto">
+            {items.map((i) => (
+              <li key={i.id} className="flex items-center gap-3 rounded-lg border border-line bg-carbon px-3 py-2 text-sm">
+                <input type="checkbox" className="accent-violet" aria-label={`Import ${i.name}`} checked={i.pick} disabled={i.status !== "ok" && i.status !== "not-video"}
+                  onChange={(e) => setItems((all) => all.map((x) => (x.id === i.id ? { ...x, pick: e.target.checked } : x)))} />
+                <span className="min-w-0 flex-1 truncate">{i.folder && <span className="text-ash">{i.folder} / </span>}{i.name}</span>
+                <span className="shrink-0 text-xs">{badge(i)}</span>
+              </li>
+            ))}
+          </ul>
+          <Button onClick={run} disabled={importing || !picked}>{importing ? "Adding…" : `Add ${picked} film(s)`}</Button>
+        </>
+      )}
     </div>
   );
 }

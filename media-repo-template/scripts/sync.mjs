@@ -7,6 +7,8 @@
  * Inbox entries on a row (row.inbox[field]):
  *   "path"                              one uploaded file
  *   { parts: ["p.part001", ...], size } a large file uploaded in 45 MB pieces (joined back byte for byte here)
+ *   { drive: "<file id>", name }       a Google Drive film: downloaded here; the site keeps a 10 s preview + poster,
+ *                                       the full film streams from Drive (projects.source_url)
  *   _poster: { at: seconds } | { auto: true }   re-pick the poster from the published video
  *   _cover: true                                 re-render the caption cover card + share card (projects)
  * Env: SUPABASE_URL, SUPABASE_SECRET_KEY, GITHUB_TOKEN, GITHUB_REPOSITORY.  Flags: --manifest-only
@@ -15,7 +17,9 @@ import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
 import { execFileSync } from "node:child_process";
-import { planJobs, ffmpegArgs, bitrateFor, posterArgs, frameArgs, buildManifest, MAX_BYTES } from "./lib.mjs";
+import { Readable } from "node:stream";
+import { pipeline } from "node:stream/promises";
+import { planJobs, ffmpegArgs, bitrateFor, posterArgs, frameArgs, buildManifest, MAX_BYTES, driveIdOf, driveDownloadUrl, previewWindow, aspectOf } from "./lib.mjs";
 import { pickBestTime, renderPoster, renderCover, renderShareCard, draftCaption, cleanTitle, probe } from "./posters.mjs";
 
 const columns = JSON.parse(fs.readFileSync(new URL("./publicColumns.json", import.meta.url), "utf8"));
@@ -49,14 +53,46 @@ const hasAudio = (file) => JSON.parse(sh("ffprobe", ["-v", "error", "-print_form
 const objUrl = (p) => `${SB}/storage/v1/object/inbox/${p.split("/").map(encodeURIComponent).join("/")}`;
 async function fetchObject(p) {
   for (let attempt = 1; ; attempt++) {
-    const res = await fetch(objUrl(p), { headers });
-    if (res.ok) return Buffer.from(await res.arrayBuffer());
-    if (attempt >= 3) throw new Error(`download ${p}: HTTP ${res.status}`);
+    let res = null;
+    try { res = await fetch(objUrl(p), { headers }); } catch (e) { if (attempt >= 3) throw new Error(`download ${p}: ${e.cause?.code ?? e.message}`, { cause: e }); }
+    if (res?.ok) return Buffer.from(await res.arrayBuffer());
+    if (attempt >= 3) throw new Error(`download ${p}: HTTP ${res?.status}`);
     await new Promise((r) => setTimeout(r, 1000 * attempt));
   }
 }
-/** Downloads one inbox entry (single file or parts) to a local file. Returns { file, paths } (paths = what to delete later). */
+/** Streams a public Google Drive file to disk (big files never sit in memory). */
+async function downloadDrive(id, name = "") {
+  const ext = (name.match(/\.(\w{2,4})$/)?.[1] ?? "mp4").toLowerCase();
+  const file = path.join(TMP, `drive-${id}.${ext}`.replace(/[^\w.-]/g, "_"));
+  for (let attempt = 1; ; attempt++) {
+    let res;
+    try { res = await fetch(driveDownloadUrl(id), { redirect: "follow", headers: { "User-Agent": "Mozilla/5.0 (xperience-sync)" } }); }
+    catch (e) { // dropped / reused connection: try again
+      if (attempt >= 4) throw new Error(`Couldn't reach Google Drive (${e.cause?.code ?? e.message}). Press Retry.`, { cause: e });
+      await new Promise((r) => setTimeout(r, 2000 * attempt)); continue;
+    }
+    const type = res.headers.get("content-type") ?? "";
+    if (res.ok && !type.includes("text/html") && res.body) {
+      await pipeline(Readable.fromWeb(res.body), fs.createWriteStream(file));
+      const size = fs.statSync(file).size;
+      if (size < 1024) throw new Error("Google Drive sent an empty file. Check the link and press Retry.");
+      console.log(`    downloaded from Drive (${(size / 1048576).toFixed(1)} MB)`);
+      return file;
+    }
+    const body = type.includes("text/html") ? await res.text().catch(() => "") : "";
+    if (/quota|too many users|limit/i.test(body)) {
+      if (attempt >= 3) throw new Error("Google Drive is limiting downloads of this file right now (too many views or downloads today). Press Retry later, or make a copy of the file in Drive and paste the copy's link.");
+    } else if (res.status === 404 || /accounts\.google\.com|sign in|request access|you need access/i.test(body) || res.status === 401 || res.status === 403) {
+      throw new Error("Google Drive won't share this file. In Drive: Share > General access > \"Anyone with the link\" (Viewer), then press Retry.");
+    } else if (attempt >= 3) throw new Error(`Google Drive download failed (HTTP ${res.status}). Press Retry.`);
+    await new Promise((r) => setTimeout(r, 4000 * attempt));
+  }
+}
+
+/** Downloads one inbox entry (single file, parts or a Drive file) to a local file. Returns { file, paths } (paths = inbox files to delete later). */
 async function download(entry) {
+  const driveId = driveIdOf(entry);
+  if (driveId) return { file: await downloadDrive(driveId, entry.name), paths: [] };
   if (typeof entry === "string") {
     const file = path.join(TMP, path.basename(entry).replace(/[^\w.-]/g, "_"));
     fs.writeFileSync(file, await fetchObject(entry));
@@ -169,10 +205,16 @@ async function processRow(table, row) {
     }
     const info = probe(input);
     const loop = job.kind === "loop";
-    const dest = transcode(input, job.out, { audio: job.audio && hasAudio(input), loop });
+    // Drive films: a 10 s preview around the best moment; the poster comes from the full film
+    const best = job.preview ? pickBestTime(input) : null;
+    const win = job.preview ? previewWindow(info.duration, best.t, job.preview) : null;
+    if (win) patch.aspect_ratio = aspectOf(info.width, info.height);
+    if (win) console.log(`    preview ${win.start.toFixed(1)}s +${win.length}s of ${info.duration.toFixed(1)}s (best frame ${best.t.toFixed(2)}s)`);
+    const dest = transcode(input, job.out, { audio: job.audio && hasAudio(input), loop, ...(win ?? {}) });
     patch[job.field] = job.out;
     if (VIDEO_POSTER_TABLES.has(table) && (job.field === "video_url" || job.field === "after_url") && !posterDone) {
-      await makePoster(table, row, dest, patch);
+      if (win) { await makePoster(table, row, input, patch, best.t); patch.poster_source = "auto"; }
+      else await makePoster(table, row, dest, patch);
       posterDone = true;
     } else if (job.poster) {
       const p = path.join(ROOT, job.poster); ensureDir(p);
@@ -188,7 +230,7 @@ async function processRow(table, row) {
       if (!count) throw new Error("frame extraction produced no frames");
       patch.frames = { ...(patch.frames ?? row.frames ?? {}), [job.frames.variant]: { path: job.frames.dir, count, w: job.frames.w, h: job.frames.h, ext: "webp", pattern: "f%03d" } };
     }
-    if (job.teaser) { transcode(input, job.teaser, { audio: false, teaser: true }); patch.teaser_url = job.teaser; }
+    if (job.teaser) { transcode(input, job.teaser, { audio: false, teaser: true, ...(win ? { start: win.start } : {}) }); patch.teaser_url = job.teaser; }
     if (table === "projects" && job.field === "video_url") {
       if (!row.duration_s || jobs.length) patch.duration_s = Math.round(info.duration * 10) / 10;
       if (job.master && fs.statSync(input).size > MAX_BYTES) patch.full_video_url = await uploadMaster(input, `${row.slug ?? row.id}.mp4`);
@@ -246,13 +288,44 @@ async function regenerateManifest() {
   console.log("manifest.json regenerated");
 }
 
-let failures = 0;
+/** Publishes finished items: one commit, then each row gets its URLs and is marked published. */
+async function flush(done) {
+  if (!done.length) return;
+  gitCommit(`media: publish ${done.length} item(s)`);
+  for (const d of done) {
+    const body = { ...d.patch, media_status: "published", media_synced_at: new Date().toISOString(), media_error: null, inbox: {} };
+    if (d.table === "projects") body.inbox_path = null;
+    // only clear the row if nobody re-uploaded while we worked (inbox unchanged since we read it)
+    const key = `${pk(d.table)}=eq.${encodeURIComponent(d.row[pk(d.table)])}`;
+    const fresh = (await rest(`${d.table}?select=inbox,updated_at&${key}`))[0];
+    if (fresh && JSON.stringify(fresh.inbox ?? {}) !== JSON.stringify(d.row.inbox ?? {})) { delete body.inbox; delete body.media_status; console.log(`  ${d.table}/${d.row[pk(d.table)]}: new upload arrived meanwhile; it stays pending`); }
+    await rest(`${d.table}?${key}`, { method: "PATCH", body: JSON.stringify(body) });
+    await removeFromInbox(d.cleanup);
+  }
+  done.length = 0;
+}
+
+/** Starts another run of this workflow (big Drive imports continue across runs instead of hitting the 60 min limit). */
+async function continueLater() {
+  if (!GH || !REPO) return console.log("more items pending: the hourly run will continue");
+  const res = await fetch(`https://api.github.com/repos/${REPO}/actions/workflows/sync.yml/dispatches`, {
+    method: "POST", headers: { Authorization: `Bearer ${GH}`, Accept: "application/vnd.github+json" }, body: JSON.stringify({ ref: process.env.GITHUB_REF_NAME || "main", inputs: { table: "continue" } }),
+  });
+  console.log(res.ok ? "more items pending: queued another run" : `more items pending: couldn't queue another run (HTTP ${res.status}); the hourly run will continue`);
+}
+
+const BUDGET_MS = Number(process.env.SYNC_BUDGET_MIN || 40) * 60_000; // the job is killed at 60 min
+const BATCH = 5;
+const started = Date.now();
+let failures = 0, outOfTime = false;
 if (!manifestOnly) {
   const done = [];
   for (const table of MEDIA_TABLES) {
+    if (outOfTime) break;
     const rows = await rest(`${table}?select=*&media_status=eq.pending&order=updated_at`);
     if (rows.length) console.log(`${table}: ${rows.length} pending`);
     for (const row of rows) {
+      if (Date.now() - started > BUDGET_MS) { outOfTime = true; break; }
       try {
         done.push({ table, row, ...(await processRow(table, row)) });
       } catch (e) {
@@ -260,23 +333,13 @@ if (!manifestOnly) {
         console.error(`  FAILED ${table}/${row[pk(table)]}: ${e.message}`);
         await rest(`${table}?${pk(table)}=eq.${encodeURIComponent(row[pk(table)])}`, { method: "PATCH", body: JSON.stringify({ media_status: "failed", media_error: String(e.message).slice(0, 500) }) });
       }
+      if (done.length >= BATCH) await flush(done); // progress is saved (and visible on the site) as it goes
     }
   }
-  if (done.length) {
-    gitCommit(`media: publish ${done.length} item(s)`);
-    for (const d of done) {
-      const body = { ...d.patch, media_status: "published", media_synced_at: new Date().toISOString(), media_error: null, inbox: {} };
-      if (d.table === "projects") body.inbox_path = null;
-      // only clear the row if nobody re-uploaded while we worked (inbox unchanged since we read it)
-      const key = `${pk(d.table)}=eq.${encodeURIComponent(d.row[pk(d.table)])}`;
-      const fresh = (await rest(`${d.table}?select=inbox,updated_at&${key}`))[0];
-      if (fresh && JSON.stringify(fresh.inbox ?? {}) !== JSON.stringify(d.row.inbox ?? {})) { delete body.inbox; delete body.media_status; console.log(`  ${d.table}/${d.row[pk(d.table)]}: new upload arrived meanwhile; it stays pending`); }
-      await rest(`${d.table}?${key}`, { method: "PATCH", body: JSON.stringify(body) });
-      await removeFromInbox(d.cleanup);
-    }
-  }
+  await flush(done);
 }
 await regenerateManifest();
 gitCommit("manifest: update");
 fs.rmSync(TMP, { recursive: true, force: true });
+if (outOfTime) await continueLater();
 if (failures) { console.error(`${failures} item(s) failed (marked "failed" in admin with the reason).`); process.exitCode = 1; }
